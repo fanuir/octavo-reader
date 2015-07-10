@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="pref_story_fonts_entries">
-        <item>Default</item>
+        <item>Serif</item>
         <item>Lora</item>
         <item>Droid Serif</item>
+        <item>Sans Serif</item>
         <item>Droid Sans</item>
         <item>Open Sans</item>
     </string-array>
     <string-array name="pref_story_fonts_entry_values">
-        <item>Default</item>
+        <item>Serif</item>
         <item>Lora-Regular.ttf</item>
         <item>DroidSerif.ttf</item>
+        <item>Sans Serif</item>
         <item>DroidSans.ttf</item>
         <item>OpenSans-Regular.ttf</item>
     </string-array>

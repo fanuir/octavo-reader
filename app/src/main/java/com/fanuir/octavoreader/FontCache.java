@@ -12,15 +12,15 @@ public class FontCache {
 
     private static Hashtable<String, Typeface> fontCache = new Hashtable<String, Typeface>();
 
-    public static Typeface get(String name, Context context) {
-        Typeface tf = fontCache.get(name);
+    public static Typeface get(String font, Context context) {
+        Typeface tf = fontCache.get(font);
         if (tf == null) {
             try {
-                tf = Typeface.createFromAsset(context.getAssets(), name);
+                tf = Typeface.createFromAsset(context.getAssets(), "fonts/" + font);
             } catch (Exception e) {
                 return null;
             }
-            fontCache.put(name, tf);
+            fontCache.put(font, tf);
         }
         return tf;
     }
