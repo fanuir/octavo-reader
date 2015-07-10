@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Octavo Reader</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <string name="pref_title_story_font">Font</string>
+    <string name="pref_story_fonts_default">Droid Sans</string>
+    <string name="title_activity_reader">ReaderActivity</string>
+</resources>
