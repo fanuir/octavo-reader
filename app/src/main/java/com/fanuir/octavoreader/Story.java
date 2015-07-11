@@ -7,21 +7,40 @@ import java.util.ArrayList;
  */
 public class Story {
 
-    private ArrayList<Author> mAuthors;
     private String mTitle;
+    private ArrayList<String> mAuthors;
     private ArrayList<Chapter> mChapters;
+    private ArrayList<String> mFandoms;
     private String mStoryId;
     private int mCurrentChapter;
+    private int mWordCount;
 
     public Story(){
-        mAuthors = new ArrayList<Author>();
+        mAuthors = new ArrayList<String>();
         mTitle = "Untitled";
         mChapters = new ArrayList<Chapter>();
         mStoryId = "000000";
         mCurrentChapter = 1;
     }
 
-    public ArrayList<Author> getAuthors() {
+    public Story(String mTitle, ArrayList<String> mAuthors, ArrayList<String> mFandoms, String mStoryId, int mWordCount) {
+        this.mTitle = mTitle;
+        this.mAuthors = mAuthors;
+        this.mFandoms = mFandoms;
+        this.mStoryId = mStoryId;
+        this.mChapters = new ArrayList<Chapter>();
+        this.mCurrentChapter = 1;
+        this.mWordCount = mWordCount;
+    }
+
+    public Story(String mTitle, ArrayList<String> mAuthors, ArrayList<Chapter> mChapters, String mStoryId) {
+        this.mTitle = mTitle;
+        this.mAuthors = mAuthors;
+        this.mChapters = mChapters;
+        this.mStoryId = mStoryId;
+    }
+
+    public ArrayList<String> getAuthors() {
         return mAuthors;
     }
 
@@ -33,8 +52,16 @@ public class Story {
         return mChapters.size();
     }
 
+    public int getWordCount(){
+        return mWordCount;
+    }
+
     public String getStoryId() {
         return mStoryId;
+    }
+
+    public ArrayList<String> getFandoms() {
+        return mFandoms;
     }
 
     public ArrayList<Chapter> getChapters() {
@@ -48,5 +75,10 @@ public class Story {
 
     public Chapter getNextChapter(){
         return getChapter(mCurrentChapter++ + 1);
+    }
+
+    public String toString(){
+        String story = String.format("%s by %s: %d words\n%s", getTitle(), getAuthors(), getWordCount(), getFandoms());
+        return story;
     }
 }

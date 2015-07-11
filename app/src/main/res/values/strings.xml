@@ -8,4 +8,6 @@
     <string name="pref_title_story_font">Font</string>
     <string name="pref_story_fonts_default">Droid Sans</string>
     <string name="title_activity_reader">ReaderActivity</string>
+
+    <string name="get_story_button_text">Get Story from ID</string>
 </resources>

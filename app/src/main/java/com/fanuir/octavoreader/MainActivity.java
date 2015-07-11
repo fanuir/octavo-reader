@@ -2,18 +2,36 @@ package com.fanuir.octavoreader;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    Button mGetStoryButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mGetStoryButton = (Button) findViewById(R.id.get_story_button);
+        mGetStoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText idField = (EditText) findViewById(R.id.story_id_field);
+                String storyId = idField.getText().toString();
+                StoryFetcher sf = new StoryFetcher(v.getContext());
+                sf.execute(storyId);
+
+            }
+        });
     }
 
     @Override
@@ -45,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void openReader(View view){
         Intent intent = ReaderActivity.newInstance(MainActivity.this);
-        System.out.println("OPENING READER MAYBE???????????????????????????????????");
         startActivity(intent);
     }
 }
