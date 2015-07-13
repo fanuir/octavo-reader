@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +23,7 @@ public class Reader extends TextView {
     public Reader(Context context, AttributeSet attrs){
         super(context, attrs);
         setCustomFont(context);
+        setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     public void setCustomFont(Context context) {

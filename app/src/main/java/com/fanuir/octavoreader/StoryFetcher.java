@@ -77,6 +77,9 @@ public class StoryFetcher extends AsyncTask<String, Void, Void>{
         }
 
         ArrayList<Chapter> chapters = getChapters(fic, availChapters);
+        Chapter first = chapters.get(0);
+        String content = String.format("<h2>%s</h2>%s", title, first.getContent());
+        first.setContent(content);
 
         return new Story(title, summary, as, chapters, fs, id, wordCount);
     }
@@ -84,18 +87,18 @@ public class StoryFetcher extends AsyncTask<String, Void, Void>{
     public ArrayList<Chapter> getChapters(Document fic, int numChaps){
         ArrayList<Chapter> chapters = new ArrayList<Chapter>();
 
-        chapters.add(getChapter(fic));
+        Chapter first = getChapter(fic);
+        chapters.add(first);
         System.out.println(numChaps);
-
         if(numChaps > 1) {
             /* Rest of the chapters */
             Document nextChap;
-            String nextUrl = "http://archiveofourown.org" + fic.select("li.chapter.next a").attr("href") + "?view_adult=true";
+            String nextUrl = String.format("http://archiveofourown.org%s?view_adult=true", fic.select("li.chapter.next a").attr("href"));
             for (int i = 1; i < numChaps; i++) {
                 try {
                     nextChap = Jsoup.connect(nextUrl).get();
                     chapters.add(getChapter(nextChap));
-                    nextUrl = "http://archiveofourown.org" + nextChap.select("li.chapter.next a").attr("href") + "?view_adult=true";
+                    nextUrl = String.format("http://archiveofourown.org%s?view_adult=true", nextChap.select("li.chapter.next a").attr("href"));
                     System.out.println(nextUrl);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -107,12 +110,12 @@ public class StoryFetcher extends AsyncTask<String, Void, Void>{
     }
 
     public Chapter getChapter(Document chap){
-        /* First Chapter */
         String title = chap.select("div.chapter h3.title").text();
         String notes = null;
+        String endnotes = null;
         try {
-            notes = chap.select("div.notes h3 + blockquote").text();
-            System.out.println(notes);
+            notes = chap.select("div.notes blockquote").first().html();
+            endnotes = chap.select("div.end.notes blockquote").html();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -122,10 +125,16 @@ public class StoryFetcher extends AsyncTask<String, Void, Void>{
         rawContent.select("h3").first().remove();
 
         //TODO: Remove image tags, or something.
-        if(notes != null || !notes.equals("")){
-            rawContent.prepend("<p><i>" + notes + "</i></p><p>---</p>");
+        if(notes != null && !notes.equals("")){
+            rawContent.prepend("<p>" + notes + "</p><p>---</p>");
         }
-        rawContent.prepend("<h3>" + title + "</h3>");
+        if(endnotes != null && !endnotes.equals("")){
+            String extra = String.format("<p>---</p><h3>End Notes:</h3><p>%s</p>",endnotes);
+            rawContent.append(extra);
+        }
+        if(!title.equals("")){
+            rawContent.prepend("<h3>" + title + "</h3>");
+        }
         String content = rawContent.html();
         return new Chapter(title, notes, content);
     }

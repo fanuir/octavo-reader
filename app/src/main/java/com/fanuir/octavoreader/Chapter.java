@@ -35,6 +35,18 @@ public class Chapter implements Serializable {
         return mContent;
     }
 
+    public void setTitle(String mTitle) {
+        this.mTitle = mTitle;
+    }
+
+    public void setNotes(String mNotes) {
+        this.mNotes = mNotes;
+    }
+
+    public void setContent(String mContent) {
+        this.mContent = mContent;
+    }
+
     public String toString(){
         String chapter = String.format("%s", getTitle());
         return chapter;
