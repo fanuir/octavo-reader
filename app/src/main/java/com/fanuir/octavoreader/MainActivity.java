@@ -15,6 +15,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     Button mGetStoryButton;
+    Button mReaderButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,19 @@ public class MainActivity extends AppCompatActivity {
                 StoryFetcher sf = new StoryFetcher(v.getContext());
                 sf.execute(storyId);
 
+            }
+        });
+
+        mReaderButton = (Button) findViewById(R.id.reader_button);
+        mReaderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText idField = (EditText) findViewById(R.id.story_id_field);
+                String storyId = idField.getText().toString();
+
+                Intent intent = ReaderActivity.newInstance(MainActivity.this);
+                intent.putExtra("storyId", storyId);
+                startActivity(intent);
             }
         });
     }
@@ -58,11 +72,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void openSettings(){
         Intent intent = SettingsActivity.newInstance(MainActivity.this);
-        startActivity(intent);
-    }
-
-    public void openReader(View view){
-        Intent intent = ReaderActivity.newInstance(MainActivity.this);
         startActivity(intent);
     }
 }

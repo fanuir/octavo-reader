@@ -1,14 +1,20 @@
 package com.fanuir.octavoreader;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-
+import android.widget.ScrollView;
+import android.widget.Toast;
 
 public class ReaderActivity extends AppCompatActivity {
+
+    Reader mReader;
+    Handler uiHandler;
 
     static public Intent newInstance(Context context) {
         return new Intent(context, ReaderActivity.class);
@@ -18,6 +24,22 @@ public class ReaderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reader);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            final String storyId;
+            storyId = extras.getString("storyId");
+            mReader = (Reader) findViewById(R.id.reader_view);
+            Toast.makeText(this, "Opening Story...", Toast.LENGTH_SHORT).show();
+            uiHandler = new Handler();
+            uiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mReader.loadStory(storyId);
+                    setTitle(mReader.getStory().getTitle());
+                }
+            });
+        }
     }
 
     @Override
@@ -29,13 +51,43 @@ public class ReaderActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        } else if(id == R.id.action_next_chap) {
+            Toast.makeText(this, "Loading Chapter...", Toast.LENGTH_SHORT).show();
+            uiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mReader.loadNextChapter();
+                }
+            });
+
+
+            ScrollView scroller = (ScrollView) findViewById(R.id.scroll_reader);
+            scroller.scrollTo(0,0);
+
+            return true;
+        } else if(id == R.id.action_prev_chap) {
+            Toast.makeText(this, "Loading Chapter...", Toast.LENGTH_SHORT).show();
+
+            uiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mReader.loadPrevChapter();
+                }
+            });
+
+            ScrollView scroller = (ScrollView) findViewById(R.id.scroll_reader);
+            scroller.scrollTo(0, 0);
+            return true;
+        } else if(id == R.id.action_bookmark) {
+            Reader reader = (Reader) findViewById(R.id.reader_view);
+            ScrollView scroller = (ScrollView) findViewById(R.id.scroll_reader);
+            int pos = scroller.getScrollY();
+
+            System.out.println(String.format("Position: %d", pos));
             return true;
         }
 

@@ -7,7 +7,14 @@
 
     <string name="pref_title_story_font">Font</string>
     <string name="pref_story_fonts_default">Droid Sans</string>
-    <string name="title_activity_reader">ReaderActivity</string>
 
+    <string name="title_activity_reader">Reader</string>
     <string name="get_story_button_text">Get Story from ID</string>
+
+    <string name="action_next_chap">Next Chapter</string>
+    <string name="action_prev_chap">Previous Chapter</string>
+    <string name="action_bookmark">Bookmark</string>
+    <string name="title_activity_loading">LoadingActivity</string>
+
+
 </resources>

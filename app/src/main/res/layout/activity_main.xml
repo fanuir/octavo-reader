@@ -29,12 +29,11 @@
         android:onClick="openReader" />
 
     <Button
-        android:id="@+id/reader"
+        android:id="@+id/reader_button"
         android:text="Reader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/story_id_field"
-        android:layout_alignParentRight="true"
-        android:onClick="openReader" />
+        android:layout_alignParentRight="true" />
 
 </RelativeLayout>
