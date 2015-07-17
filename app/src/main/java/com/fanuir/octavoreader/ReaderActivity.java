@@ -27,15 +27,15 @@ public class ReaderActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            final String storyId;
-            storyId = extras.getString("storyId");
+            final String STORY_ID;
+            STORY_ID = extras.getString("storyId");
             mReader = (Reader) findViewById(R.id.reader_view);
-            Toast.makeText(this, "Opening Story...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ReaderActivity.this, "Opening Story...", Toast.LENGTH_SHORT).show();
             uiHandler = new Handler();
             uiHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mReader.loadStory(storyId);
+                    mReader.loadStory(STORY_ID);
                     setTitle(mReader.getStory().getTitle());
                 }
             });
@@ -56,7 +56,7 @@ public class ReaderActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         } else if(id == R.id.action_next_chap) {
-            Toast.makeText(this, "Loading Chapter...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ReaderActivity.this, "Loading Chapter...", Toast.LENGTH_SHORT).show();
             uiHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -70,7 +70,7 @@ public class ReaderActivity extends AppCompatActivity {
 
             return true;
         } else if(id == R.id.action_prev_chap) {
-            Toast.makeText(this, "Loading Chapter...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ReaderActivity.this, "Loading Chapter...", Toast.LENGTH_SHORT).show();
 
             uiHandler.post(new Runnable() {
                 @Override

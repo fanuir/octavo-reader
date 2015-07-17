@@ -44,7 +44,7 @@ public class Reader extends TextView {
 
     public void loadStory(String id){
         try {
-            String fileName = "storyObject" + id + ".ser";
+            String fileName = "ao3-" + id;
             FileInputStream fis = getContext().openFileInput(fileName);
             ObjectInputStream is = new ObjectInputStream(fis);
 

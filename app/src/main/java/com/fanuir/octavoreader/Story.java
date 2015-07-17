@@ -1,5 +1,10 @@
 package com.fanuir.octavoreader;
 
+import android.content.Context;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -16,6 +21,7 @@ public class Story implements Serializable {
     private String mSummary;
     private int mCurrentChapter;
     private int mWordCount;
+    private String mSource;
 
     private static final long serialVersionUID = 2492120520485903037L;
 
@@ -37,7 +43,7 @@ public class Story implements Serializable {
         this.mWordCount = mWordCount;
     }
 
-    public Story(String mTitle, String mSummary, ArrayList<String> mAuthors, ArrayList<Chapter> mChapters, ArrayList<String> mFandoms, String mStoryId, int mWordCount) {
+    public Story(String mTitle, String mSummary, ArrayList<String> mAuthors, ArrayList<Chapter> mChapters, ArrayList<String> mFandoms, String mStoryId, int mWordCount, String mSource) {
         this.mTitle = mTitle;
         this.mSummary = mSummary;
         this.mAuthors = mAuthors;
@@ -46,6 +52,7 @@ public class Story implements Serializable {
         this.mChapters = mChapters;
         this.mCurrentChapter = 1;
         this.mWordCount = mWordCount;
+        this.mSource = mSource;
     }
     public ArrayList<String> getAuthors() {
         return mAuthors;
@@ -100,6 +107,10 @@ public class Story implements Serializable {
     public Chapter getPrevChapter(){
         mCurrentChapter -= 1;
         return getChapter(mCurrentChapter);
+    }
+
+    public String getSource() {
+        return mSource;
     }
 
     public String toString(){

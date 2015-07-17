@@ -2,7 +2,6 @@ package com.fanuir.octavoreader;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,9 +27,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 EditText idField = (EditText) findViewById(R.id.story_id_field);
                 String storyId = idField.getText().toString();
-                StoryFetcher sf = new StoryFetcher(v.getContext());
-                sf.execute(storyId);
-
+                try {
+                    int i = Integer.parseInt(storyId);
+                    ArchiveStoryFetcher sf = new ArchiveStoryFetcher(v.getContext());
+                    sf.execute(storyId);
+                } catch(NumberFormatException e) {
+                    //e.printStackTrace();
+                    Toast.makeText(v.getContext(), "Input must be numeric.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
