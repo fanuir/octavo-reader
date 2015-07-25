@@ -37,4 +37,12 @@
         android:layout_below="@id/story_id_field"
         android:layout_alignParentRight="true" />
 
+    <Button
+        android:id="@+id/library_button"
+        android:text="@string/library_button_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/reader_button"
+        android:layout_alignParentLeft="true"/>
+
 </RelativeLayout>

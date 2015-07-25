@@ -8,6 +8,7 @@
         <item>Droid Sans</item>
         <item>Open Sans</item>
     </string-array>
+
     <string-array name="pref_story_fonts_entry_values">
         <item>Serif</item>
         <item>Lora-Regular.ttf</item>
@@ -15,5 +16,21 @@
         <item>Sans Serif</item>
         <item>DroidSans.ttf</item>
         <item>OpenSans-Regular.ttf</item>
+    </string-array>
+
+    <string-array name="pref_story_font_size_entries">
+        <item>Small (14px)</item>
+        <item>16px</item>
+        <item>Medium (18px)</item>
+        <item>20px</item>
+        <item>Large (22px)</item>
+    </string-array>
+
+    <string-array name="pref_story_font_size_entry_values">
+        <item>14</item>
+        <item>16</item>
+        <item>18</item>
+        <item>20</item>
+        <item>22</item>
     </string-array>
 </resources>

@@ -9,13 +9,13 @@ import android.widget.Toast;
 /**
  * Created by ivy on 7/10/15.
  */
-public class ArchiveStoryFetcher extends AsyncTask<String, Void, Void>{
+public class ArchiveStoryDownloadTask extends AsyncTask<String, Void, Void>{
 
     private Context mContext;
     private Story mStory;
     private ProgressDialog progressDialog;
 
-    public ArchiveStoryFetcher(Context context){
+    public ArchiveStoryDownloadTask(Context context){
         super();
         mContext = context;
     }
@@ -45,7 +45,7 @@ public class ArchiveStoryFetcher extends AsyncTask<String, Void, Void>{
             Toast.makeText(mContext, mStory.toString(), Toast.LENGTH_LONG).show();
             Intent i = ReaderActivity.newInstance(mContext);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            i.putExtra("storyId", mStory.getStoryId());
+            i.putExtra("id", mStory.getStoryId());
             mContext.startActivity(i);
         } else {
             Toast.makeText(mContext, "Failed.", Toast.LENGTH_SHORT).show();

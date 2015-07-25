@@ -9,4 +9,15 @@
         android:entryValues="@array/pref_story_fonts_entry_values"
         android:defaultValue="@string/pref_story_fonts_default"
         />
+
+    <ListPreference
+        android:key="pref_key_story_font_size"
+        android:title="@string/pref_title_story_font_size"
+        android:summary="%s"
+        android:dialogTitle="@string/pref_title_story_font_size"
+        android:entries="@array/pref_story_font_size_entries"
+        android:entryValues="@array/pref_story_font_size_entry_values"
+        android:defaultValue="@string/pref_story_font_size_default"
+        />
+
 </PreferenceScreen>

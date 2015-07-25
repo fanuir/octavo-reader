@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
 import android.text.Html;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +25,14 @@ public class Reader extends TextView {
     public Reader(Context context, AttributeSet attrs){
         super(context, attrs);
         setCustomFont(context);
+        setFontSize(context);
         setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    public void setFontSize(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        int fontSize = Integer.parseInt(sharedPreferences.getString("pref_key_story_font_size", "14"));
+        setTextSize(TypedValue.COMPLEX_UNIT_SP,fontSize);
     }
 
     public void setCustomFont(Context context) {
@@ -50,7 +59,8 @@ public class Reader extends TextView {
 
             mStory = (Story) is.readObject();
             Chapter currChapter = mStory.getCurrentChapter();
-            this.setText(Html.fromHtml(currChapter.getContent()));
+            Spanned content = Html.fromHtml(currChapter.getContent());
+            this.setText(content);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -59,7 +69,8 @@ public class Reader extends TextView {
     public void loadNextChapter(){
         Chapter chapter = mStory.getNextChapter();
         if(chapter != null) {
-            this.setText(Html.fromHtml(chapter.getContent()));
+            Spanned content = Html.fromHtml(chapter.getContent());
+            this.setText(content);
         } else {
             Toast.makeText(getContext(), "End of story.", Toast.LENGTH_SHORT).show();
         }
@@ -68,7 +79,8 @@ public class Reader extends TextView {
     public void loadPrevChapter(){
         Chapter chapter = mStory.getPrevChapter();
         if(chapter!=null) {
-            this.setText(Html.fromHtml(chapter.getContent()));
+            Spanned content = Html.fromHtml(chapter.getContent());
+            this.setText(content);
         } else {
             Toast.makeText(getContext(), "First chapter.", Toast.LENGTH_SHORT).show();
         }

@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button mGetStoryButton;
     Button mReaderButton;
+    Button mLibraryButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
                 String storyId = idField.getText().toString();
                 try {
                     int i = Integer.parseInt(storyId);
-                    ArchiveStoryFetcher sf = new ArchiveStoryFetcher(v.getContext());
+                    ArchiveStoryDownloadTask sf = new ArchiveStoryDownloadTask(v.getContext());
                     sf.execute(storyId);
                 } catch(NumberFormatException e) {
                     //e.printStackTrace();
@@ -46,7 +47,16 @@ public class MainActivity extends AppCompatActivity {
                 String storyId = idField.getText().toString();
 
                 Intent intent = ReaderActivity.newInstance(MainActivity.this);
-                intent.putExtra("storyId", storyId);
+                intent.putExtra("id", storyId);
+                startActivity(intent);
+            }
+        });
+
+        mLibraryButton = (Button) findViewById(R.id.library_button);
+        mLibraryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = LibraryActivity.newInstance(MainActivity.this);
                 startActivity(intent);
             }
         });

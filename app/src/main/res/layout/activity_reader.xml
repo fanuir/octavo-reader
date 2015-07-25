@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     tools:context="com.fanuir.octavoreader.ReaderActivity">
 
-    <ScrollView
+    <!--<ScrollView
         android:id="@+id/scroll_reader"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -18,7 +18,14 @@
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:id="@+id/reader_view"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
-    </ScrollView>
+            android:layout_height="wrap_content"
+            android:textColor="@color/default_reader_text"/>
+
+    </ScrollView>-->
+    <com.fanuir.octavoreader.WebReader
+        android:id="@+id/web_reader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </com.fanuir.octavoreader.WebReader>
 
 </LinearLayout>

@@ -17,7 +17,7 @@ public class Constants {
     public static final String SEL_ARCHIVE_FANDOMS = "dt.fandom + dd li";
     public static final String SEL_ARCHIVE_NEXT_CHAPTER_LINK = "li.chapter.next a";
     public static final String SEL_ARCHIVE_CHAPTER_TITLE = "div.chapter h3.title";
-    public static final String SEL_ARCHIVE_CHAPTER_NOTES = "div.notes blockquote";
+    public static final String SEL_ARCHIVE_CHAPTER_NOTES = "div#notes blockquote";
     public static final String SEL_ARCHIVE_CHAPTER_ENDNOTES = "div.end.notes blockquote";
     public static final String SEL_ARCHIVE_CHAPTER_TEXT = "div[role=article]";
 

@@ -1,14 +1,12 @@
 package com.fanuir.octavoreader;
 
 import android.content.Context;
-import android.text.Html;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -40,7 +38,7 @@ public class ArchiveStoryUtils {
     }
 
     public static void saveMetadata(Context context, StoryData storyData){
-        JsonObject metadata;
+        JsonArray metadata;
         JsonParser jsonParser = new JsonParser();
         Gson gson = new Gson();
         String json = gson.toJson(storyData);
@@ -48,14 +46,21 @@ public class ArchiveStoryUtils {
         try {
             FileInputStream fis = context.openFileInput(Constants.STORY_METADATA_FILENAME);
             ObjectInputStream is = new ObjectInputStream(fis);
-            metadata = (JsonObject) jsonParser.parse((String) is.readObject());
+            metadata = (JsonArray) jsonParser.parse((String) is.readObject());
 
         } catch (Exception e){
-            metadata = new JsonObject();
+            metadata = new JsonArray();
             e.printStackTrace();
         }
 
-        metadata.add(storyData.getFilename(), jsonParser.parse(json));
+        JsonObject data = (JsonObject) jsonParser.parse(json);
+
+        if(!metadata.contains(data)){
+            metadata.add(data);
+            System.out.println("Story added.");
+        } else {
+            System.out.println("Story already downloaded.");
+        }
         String result = gson.toJson(metadata);
         System.out.println(result);
 
@@ -137,13 +142,13 @@ public class ArchiveStoryUtils {
 
         StoryData metadata = new StoryData();
 
-        metadata.setStoryId(id);
+        metadata.setId(id);
         metadata.setTitle(title);
         metadata.setAuthors(as);
         metadata.setFandoms(fs);
         metadata.setAvailChapters(availChapters);
         metadata.setTotalChapters(totalChapters);
-        metadata.setDescription(summary);
+        metadata.setSummary(summary);
         metadata.setWordCount(wordCount);
         metadata.setSource(Constants.ARCHIVE_PREFIX);
 
@@ -187,7 +192,7 @@ public class ArchiveStoryUtils {
 
         ArrayList<Chapter> chapters = getChapters(fic, availChapters);
         Chapter first = chapters.get(0);
-        String content = String.format("<h1>%s</h1>%s", title, first.getContent());
+        String content = String.format("<h2>%s</h2>%s", title, first.getContent());
         first.setContent(content);
 
         return new Story(title, summary, as, chapters, fs, id, wordCount, "ao3");
@@ -221,13 +226,16 @@ public class ArchiveStoryUtils {
 
     public static Chapter getChapter(Document chap){
         String title = chap.select(Constants.SEL_ARCHIVE_CHAPTER_TITLE).text();
+        System.out.println(title);
         String notes = null;
         String endnotes = null;
         try {
-            notes = chap.select(Constants.SEL_ARCHIVE_CHAPTER_NOTES).first().html();
+            notes = chap.select(Constants.SEL_ARCHIVE_CHAPTER_NOTES).html();
             endnotes = chap.select(Constants.SEL_ARCHIVE_CHAPTER_ENDNOTES).html();
+            System.out.println(endnotes);
         } catch (Exception e){
             System.out.println("No notes.");
+            e.printStackTrace();
         }
 
         // Replace "Chapter Text" with the chapter title and notes
@@ -236,10 +244,10 @@ public class ArchiveStoryUtils {
 
         //TODO: Remove image tags, or something.
         if(notes != null && !notes.equals("")){
-            rawContent.prepend("<p>" + notes + "</p><p>---</p>");
+            rawContent.prepend("<blockquote>" + notes + "</blockquote><hr>");
         }
         if(endnotes != null && !endnotes.equals("")){
-            String extra = String.format("<p>---</p><h3>End Notes:</h3><p>%s</p>",endnotes);
+            String extra = String.format("<hr><h3>End Notes:</h3><p>%s</p>",endnotes);
             rawContent.append(extra);
         }
         if(!title.equals("")){

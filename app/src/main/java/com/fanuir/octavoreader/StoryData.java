@@ -9,8 +9,7 @@ import java.util.ArrayList;
  */
 public class StoryData {
 
-    @SerializedName("story_id")
-    public String storyId;
+    public String id;
 
     public String source;
 
@@ -25,6 +24,9 @@ public class StoryData {
 
     @SerializedName("total_chapters")
     public int totalChapters;
+
+    @SerializedName("current_chapter")
+    public int currentChapter;
 
     public String status;
 
@@ -41,14 +43,14 @@ public class StoryData {
     @SerializedName("last_opened")
     public long lastOpened;
 
-    public String description;
+    public String summary;
 
-    public String getStoryId() {
-        return storyId;
+    public String getId() {
+        return id;
     }
 
-    public void setStoryId(String storyId) {
-        this.storyId = storyId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getSource() {
@@ -60,7 +62,7 @@ public class StoryData {
     }
 
     public String getFilename(){
-        return String.format("%s-%s", getSource(), getStoryId());
+        return String.format("%s-%s", getSource(), getId());
     }
 
     public String getTitle() {
@@ -143,6 +145,14 @@ public class StoryData {
         this.kudos = kudos;
     }
 
+    public int getCurrentChapter() {
+        return currentChapter;
+    }
+
+    public void setCurrentChapter(int currentChapter) {
+        this.currentChapter = currentChapter;
+    }
+
     public long getLastOpened() {
         return lastOpened;
     }
@@ -151,11 +161,11 @@ public class StoryData {
         this.lastOpened = lastOpened;
     }
 
-    public String getDescription() {
-        return description;
+    public String getSummary() {
+        return summary;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 }
