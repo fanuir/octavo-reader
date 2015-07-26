@@ -32,12 +32,14 @@ public class WebReader extends WebView {
         setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int progress) {
-                if ( view.getProgress()==100) {
+                if (view.getProgress() == 100) {
                     System.out.println("Progress 100%");
                     loadLastPosition();
                 }
             }
         });
+        WebSettings webSettings = getSettings();
+        webSettings.setJavaScriptEnabled(true);
     }
 
     public String getFontHtml(Context context){
@@ -59,7 +61,9 @@ public class WebReader extends WebView {
         headers = "<head>"
                 + "<style>img{display: inline; height: auto; max-width: 100%;}"
                 + getFontHtml(context)
-                + "</style><link rel='stylesheet' type='text/css' href='reader.css'></head>";
+                + "</style><link rel='stylesheet' type='text/css' href='reader.css'>"
+                + "<script src='reader.js'></script>"
+                + "</head>";
         return headers;
     }
 

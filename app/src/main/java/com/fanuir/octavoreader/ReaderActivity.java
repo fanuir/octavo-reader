@@ -1,22 +1,15 @@
 package com.fanuir.octavoreader;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 public class ReaderActivity extends AppCompatActivity {
 
@@ -48,6 +41,7 @@ public class ReaderActivity extends AppCompatActivity {
                     setTitle(mWebReader.getStory().getTitle());
                 }
             });
+            mWebReader.addJavascriptInterface(new WebReaderInterface(ReaderActivity.this),"Android");
         }
     }
 
@@ -67,7 +61,6 @@ public class ReaderActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         } else if(id == R.id.action_next_chap) {
-            //Toast.makeText(ReaderActivity.this, "Loading Chapter...", Toast.LENGTH_SHORT).show();
             uiHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -76,7 +69,6 @@ public class ReaderActivity extends AppCompatActivity {
             });
             return true;
         } else if(id == R.id.action_prev_chap) {
-            //Toast.makeText(ReaderActivity.this, "Loading Chapter...", Toast.LENGTH_SHORT).show();
             uiHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -86,6 +78,7 @@ public class ReaderActivity extends AppCompatActivity {
             return true;
         } else if(id == R.id.action_bookmark) {
             float pos = mWebReader.calculateProgress();
+            //add bookmark here
             System.out.println(String.format("Position: %f", pos));
             return true;
         }
@@ -99,15 +92,6 @@ public class ReaderActivity extends AppCompatActivity {
         if(mWebReader != null){
             mWebReader.saveStoryState();
             System.out.println("Saved story progress.");
-        }
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        if(mWebReader != null && mWebReader.getStory() != null){
-            mWebReader.loadStoryState();
-            System.out.println("Restored story progress.");
         }
     }
 

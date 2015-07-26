@@ -258,13 +258,13 @@ public class ArchiveStoryUtils {
         addStoryToArray(metadata, data);
 
         String result = gson.toJson(metadata);
-        System.out.println(result);
+        //System.out.println(result);
 
         try{
             FileOutputStream fos = context.openFileOutput(Constants.STORY_METADATA_FILENAME, Context.MODE_PRIVATE);
             ObjectOutputStream os = new ObjectOutputStream(fos);
             os.writeObject(result);
-            System.out.println("Wrote to file.");
+            System.out.println("Wrote metadata to file.");
             os.close();
             fos.close();
         } catch (IOException e){
@@ -276,10 +276,10 @@ public class ArchiveStoryUtils {
         for(int i = 0; i < jsonArray.size(); i++) {
             JsonObject curr = jsonArray.get(i).getAsJsonObject();
             if (curr.equals(jsonObject)) {
+                System.out.println("Story already in array.");
                 return;
             }  else if(curr.get("title").getAsString().equals(jsonObject.get("title").getAsString())){
-                jsonArray.remove(i);
-                jsonArray.add(jsonObject);
+                jsonArray.set(i, jsonObject);
                 System.out.println("Story updated.");
                 return;
             }

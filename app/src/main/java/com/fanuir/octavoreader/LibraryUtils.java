@@ -10,6 +10,10 @@ import com.google.gson.JsonParser;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by ivy on 7/24/15.
@@ -36,7 +40,22 @@ public class LibraryUtils {
             list.add((JsonObject) metadata.get(i));
         }
 
+        sortStoryList(list);
+
         return list;
+    }
+
+    public static void sortStoryList(List<JsonObject> stories){
+        Collections.sort(stories, new Comparator<JsonObject>() {
+            @Override
+            public int compare(JsonObject lhs, JsonObject rhs) {
+                Date first = new Date(lhs.get("last_opened").getAsLong());
+                Date second = new Date(rhs.get("last_opened").getAsLong());
+                return first.compareTo(second);
+            }
+        });
+        Collections.reverse(stories);
+        System.out.println("Sorted list.");
     }
 
     public static String printJsonArray(JsonArray jsonArray){

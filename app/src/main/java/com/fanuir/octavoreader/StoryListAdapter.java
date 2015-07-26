@@ -88,7 +88,7 @@ public class StoryListAdapter extends BaseAdapter {
         }
 
         JsonObject story = getItem(index);
-        System.out.println(story);
+        //System.out.println(story);
         CharSequence title = LibraryUtils.trim(Html.fromHtml(String.format("<h4>%s</h4>", story.get("title").getAsString())));
         String authors = LibraryUtils.printJsonArray(story.get("authors").getAsJsonArray());
 

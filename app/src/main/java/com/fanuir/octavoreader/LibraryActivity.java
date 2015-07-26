@@ -35,6 +35,7 @@ public class LibraryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_library);
 
         mStoryList = LibraryUtils.getStoryList(LibraryActivity.this);
+
         mList = (ListView) findViewById(R.id.library_list_view);
         mStoryAdapter = new StoryListAdapter(LibraryActivity.this, mStoryList);
 
