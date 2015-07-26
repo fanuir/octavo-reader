@@ -2,7 +2,6 @@ package com.fanuir.octavoreader;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -28,12 +27,11 @@ public class ArchiveStoryDownloadTask extends AsyncTask<String, Void, Void>{
     @Override
     protected Void doInBackground(String... params) {
         String storyId = params[0];
-        mStory = ArchiveStoryUtils.getStory(storyId);
-        StoryData storyData = ArchiveStoryUtils.getStoryMetadata(storyId);
+        mStory = ArchiveStoryUtils.downloadStory(storyId);
+        //StoryData storyData = ArchiveStoryUtils.getStoryMetadata(storyId);
         //Write story to file here
-        //System.out.println(mContext.getFilesDir());
-        ArchiveStoryUtils.saveStory(mContext, mStory);
-        ArchiveStoryUtils.saveMetadata(mContext, storyData);
+        ArchiveStoryUtils.saveChaptersToFile(mContext, mStory.getChapters(), mStory.getFilename());
+        ArchiveStoryUtils.saveMetadataToFile(mContext, mStory.getMetadata());
         return null;
     }
 
@@ -43,10 +41,10 @@ public class ArchiveStoryDownloadTask extends AsyncTask<String, Void, Void>{
         }
         if(mStory != null) {
             Toast.makeText(mContext, mStory.toString(), Toast.LENGTH_LONG).show();
-            Intent i = ReaderActivity.newInstance(mContext);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            i.putExtra("id", mStory.getStoryId());
-            mContext.startActivity(i);
+            //Intent i = ReaderActivity.newInstance(mContext);
+            //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            //i.putExtra("filename", mStory.());
+            //mContext.startActivity(i);
         } else {
             Toast.makeText(mContext, "Failed.", Toast.LENGTH_SHORT).show();
         }

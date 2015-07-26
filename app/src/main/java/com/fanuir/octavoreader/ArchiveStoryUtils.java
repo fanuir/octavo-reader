@@ -18,65 +18,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by ivy on 7/16/15.
  */
 public class ArchiveStoryUtils {
 
-    public static void saveStory(Context context, Story story){
-        String storyFile = story.getSource() + "-" + story.getStoryId();
-        try {
-            FileOutputStream fos = context.openFileOutput(storyFile, Context.MODE_PRIVATE);
-            ObjectOutputStream os = new ObjectOutputStream(fos);
-            os.writeObject(story);
-            os.close();
-            fos.close();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public static void saveMetadata(Context context, StoryData storyData){
-        JsonArray metadata;
-        JsonParser jsonParser = new JsonParser();
-        Gson gson = new Gson();
-        String json = gson.toJson(storyData);
-        System.out.println(json);
-        try {
-            FileInputStream fis = context.openFileInput(Constants.STORY_METADATA_FILENAME);
-            ObjectInputStream is = new ObjectInputStream(fis);
-            metadata = (JsonArray) jsonParser.parse((String) is.readObject());
-
-        } catch (Exception e){
-            metadata = new JsonArray();
-            e.printStackTrace();
-        }
-
-        JsonObject data = (JsonObject) jsonParser.parse(json);
-
-        if(!metadata.contains(data)){
-            metadata.add(data);
-            System.out.println("Story added.");
-        } else {
-            System.out.println("Story already downloaded.");
-        }
-        String result = gson.toJson(metadata);
-        System.out.println(result);
-
-        try{
-            FileOutputStream fos = context.openFileOutput(Constants.STORY_METADATA_FILENAME, Context.MODE_PRIVATE);
-            ObjectOutputStream os = new ObjectOutputStream(fos);
-            os.writeObject(result);
-            System.out.println("Wrote to file.");
-            os.close();
-            fos.close();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    public static Story getStory(String id){
+    public static Story downloadStory(String id){
 
         Document fic;
         String url = String.format("http://archiveofourown.org/works/%s?view_adult=true",id);
@@ -123,6 +72,20 @@ public class ArchiveStoryUtils {
         /* Word count */
         int wordCount = Integer.parseInt(fic.select(Constants.SEL_ARCHIVE_WORD_COUNT).text());
 
+        /* Kudos */
+        int kudos = Integer.parseInt(fic.select(Constants.SEL_ARCHIVE_KUDOS).text());
+
+        /* Published */
+        String published = fic.select(Constants.SEL_ARCHIVE_PUBLISHED).text();
+
+        /* Last updated */
+        String updated;
+        try {
+            updated = fic.select(Constants.SEL_ARCHIVE_LAST_UPDATED).text();
+        } catch (NullPointerException e){
+            updated = published;
+        }
+
         /* Total Chapters */
         String chaps = fic.select(Constants.SEL_ARCHIVE_CHAPTER_STATS).text();
         String[] chapData = chaps.split("/");
@@ -151,6 +114,12 @@ public class ArchiveStoryUtils {
         metadata.setSummary(summary);
         metadata.setWordCount(wordCount);
         metadata.setSource(Constants.ARCHIVE_PREFIX);
+        metadata.setCurrentChapter(1);
+        metadata.setLastOpened(0L);
+        metadata.setLastSynced(new Date().getTime());
+        metadata.setKudos(kudos);
+        metadata.setLastUpdated(updated);
+        metadata.setPublished(published);
 
         return metadata;
 
@@ -158,46 +127,17 @@ public class ArchiveStoryUtils {
 
     public static Story parseStory(Document fic, String id){
         System.out.println("PARSING STORY WITH ID: " + id);
-        /* Title */
-        String title = fic.select(Constants.SEL_ARCHIVE_TITLE).text();
 
-        String summary = fic.select(Constants.SEL_ARCHIVE_SUMMARY).text();
+        StoryData metadata = parseStoryMetadata(fic, id);
+        JsonObject data = metadataToJson(metadata);
 
-        /* Authors */
-        ArrayList<String> as = new ArrayList<String>();
-        Elements authors = fic.select(Constants.SEL_ARCHIVE_AUTHOR);
-        for(Element author : authors){
-            as.add(author.text());
-        }
-
-        /* Word count */
-        int wordCount = Integer.parseInt(fic.select(Constants.SEL_ARCHIVE_WORD_COUNT).text());
-
-        /* Total Chapters */
-        String chaps = fic.select(Constants.SEL_ARCHIVE_CHAPTER_STATS).text();
-        String[] chapData = chaps.split("/");
-        int availChapters = Integer.parseInt(chapData[0]);
-        int totalChapters;
-        try {
-            totalChapters = Integer.parseInt(chapData[1]);
-        } catch (NumberFormatException e){
-            totalChapters = -1;
-        }
-        /* Fandoms */
-        ArrayList<String> fs = new ArrayList<String>();
-        Elements fandoms = fic.select(Constants.SEL_ARCHIVE_FANDOMS);
-        for(Element fandom : fandoms){
-            fs.add(fandom.text());
-        }
-
-        ArrayList<Chapter> chapters = getChapters(fic, availChapters);
+        ArrayList<Chapter> chapters = getChapters(fic, metadata.getAvailChapters());
         Chapter first = chapters.get(0);
-        String content = String.format("<h2>%s</h2>%s", title, first.getContent());
+        String content = String.format("<h2>%s</h2>%s", metadata.getTitle(), first.getContent());
         first.setContent(content);
 
-        return new Story(title, summary, as, chapters, fs, id, wordCount, "ao3");
+        return new Story(data, chapters);
     }
-
 
     public static ArrayList<Chapter> getChapters(Document fic, int numChaps){
         ArrayList<Chapter> chapters = new ArrayList<Chapter>();
@@ -242,7 +182,6 @@ public class ArchiveStoryUtils {
         Element rawContent = chap.select(Constants.SEL_ARCHIVE_CHAPTER_TEXT).first();
         rawContent.select("h3").first().remove();
 
-        //TODO: Remove image tags, or something.
         if(notes != null && !notes.equals("")){
             rawContent.prepend("<blockquote>" + notes + "</blockquote><hr>");
         }
@@ -256,4 +195,75 @@ public class ArchiveStoryUtils {
         String content = rawContent.html();
         return new Chapter(title, notes, content);
     }
+
+    public static void saveChaptersToFile(Context context, ArrayList<Chapter> chapters, String filename){
+        try {
+            FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(chapters);
+            os.close();
+            fos.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static JsonObject metadataToJson(StoryData metadata){
+        JsonParser jsonParser = new JsonParser();
+        Gson gson = new Gson();
+        String json = gson.toJson(metadata);
+
+        JsonObject data = (JsonObject) jsonParser.parse(json);
+        return data;
+    }
+
+    public static void saveMetadataToFile(Context context, JsonObject data){
+        JsonArray metadata;
+        JsonParser jsonParser = new JsonParser();
+        Gson gson = new Gson();
+
+        try {
+            FileInputStream fis = context.openFileInput(Constants.STORY_METADATA_FILENAME);
+            ObjectInputStream is = new ObjectInputStream(fis);
+            metadata = (JsonArray) jsonParser.parse((String) is.readObject());
+
+        } catch (Exception e){
+            metadata = new JsonArray();
+            e.printStackTrace();
+        }
+
+        addStoryToArray(metadata, data);
+
+        String result = gson.toJson(metadata);
+        System.out.println(result);
+
+        try{
+            FileOutputStream fos = context.openFileOutput(Constants.STORY_METADATA_FILENAME, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(result);
+            System.out.println("Wrote to file.");
+            os.close();
+            fos.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void addStoryToArray(JsonArray jsonArray, JsonObject jsonObject){
+        for(int i = 0; i < jsonArray.size(); i++) {
+            JsonObject curr = jsonArray.get(i).getAsJsonObject();
+            if (curr.equals(jsonObject)) {
+                return;
+            }  else if(curr.get("title").getAsString().equals(jsonObject.get("title").getAsString())){
+                jsonArray.remove(i);
+                jsonArray.add(jsonObject);
+                System.out.println("Story updated.");
+                return;
+            }
+        }
+        jsonArray.add(jsonObject);
+        System.out.println("Story added.");
+    }
+
+
 }

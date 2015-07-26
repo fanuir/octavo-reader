@@ -20,6 +20,10 @@ public class Constants {
     public static final String SEL_ARCHIVE_CHAPTER_NOTES = "div#notes blockquote";
     public static final String SEL_ARCHIVE_CHAPTER_ENDNOTES = "div.end.notes blockquote";
     public static final String SEL_ARCHIVE_CHAPTER_TEXT = "div[role=article]";
+    public static final String SEL_ARCHIVE_KUDOS = "dt + dd.kudos";
+    public static final String SEL_ARCHIVE_PUBLISHED = "dt + dd.published";
+    public static final String SEL_ARCHIVE_LAST_UPDATED = "dt + dd.status";
+
 
 
 }

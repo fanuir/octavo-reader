@@ -19,6 +19,8 @@ public class StoryData {
 
     public ArrayList<String> fandoms;
 
+    public ArrayList<String> bookmarks;
+
     @SerializedName("avail_chapters")
     public int availChapters;
 
@@ -42,6 +44,12 @@ public class StoryData {
 
     @SerializedName("last_opened")
     public long lastOpened;
+
+    @SerializedName("last_synced")
+    public long lastSynced;
+
+    @SerializedName("last_position")
+    public int lastPosition;
 
     public String summary;
 
@@ -167,5 +175,29 @@ public class StoryData {
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public ArrayList<String> getBookmarks() {
+        return bookmarks;
+    }
+
+    public void setBookmarks(ArrayList<String> bookmarks) {
+        this.bookmarks = bookmarks;
+    }
+
+    public long getLastSynced() {
+        return lastSynced;
+    }
+
+    public void setLastSynced(long lastSynced) {
+        this.lastSynced = lastSynced;
+    }
+
+    public int getLastPosition() {
+        return lastPosition;
+    }
+
+    public void setLastPosition(int lastPosition) {
+        this.lastPosition = lastPosition;
     }
 }

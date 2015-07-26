@@ -12,6 +12,10 @@ import android.view.MenuItem;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class ReaderActivity extends AppCompatActivity {
 
     WebReader mWebReader;
@@ -28,15 +32,16 @@ public class ReaderActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            final String filename;
-            filename = extras.getString("filename");
+            final String data;
+            data = extras.getString("data");
+            final JsonObject metadata = (JsonObject) new JsonParser().parse(data);
             mWebReader = (WebReader) findViewById(R.id.web_reader);
             Toast.makeText(ReaderActivity.this, "Opening Story...", Toast.LENGTH_SHORT).show();
             uiHandler = new Handler();
             uiHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mWebReader.loadStory(filename);
+                    mWebReader.loadStory(metadata);
                     setTitle(mWebReader.getStory().getTitle());
                 }
             });

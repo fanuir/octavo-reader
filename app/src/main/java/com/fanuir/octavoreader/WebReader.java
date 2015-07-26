@@ -2,20 +2,17 @@ package com.fanuir.octavoreader;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.preference.PreferenceManager;
-import android.text.Html;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.JsonObject;
 
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 
 /**
  * Created by ivy on 7/9/15.
@@ -62,12 +59,14 @@ public class WebReader extends WebView {
         settings.setDefaultFontSize(fontSize);
     }
 
-    public void loadStory(String filename){
+    public void loadStory(JsonObject metadata){
         try {
+            String filename = metadata.get("source").getAsString() + "-" + metadata.get("id").getAsString();
             FileInputStream fis = getContext().openFileInput(filename);
             ObjectInputStream is = new ObjectInputStream(fis);
 
-            mStory = (Story) is.readObject();
+            ArrayList<Chapter> chapters = (ArrayList<Chapter>) is.readObject();
+            mStory = new Story(metadata, chapters);
             Chapter currChapter = mStory.getCurrentChapter();
             String content = headers + "<body>" + currChapter.getContent() + "</body>";
             this.loadDataWithBaseURL("file:///android_asset/", content, "text/html", "UTF-8", null);
@@ -100,5 +99,9 @@ public class WebReader extends WebView {
 
     public Story getStory(){
         return mStory;
+    }
+
+    public void saveStoryState(){
+
     }
 }

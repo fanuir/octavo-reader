@@ -39,6 +39,17 @@ public class LibraryUtils {
         return list;
     }
 
+    public static String printJsonArray(JsonArray jsonArray){
+        String items = "";
+        for(int i = 0; i < jsonArray.size(); i++){
+            items += jsonArray.get(i).getAsString();
+            if(i != jsonArray.size() - 1){
+                items += ", ";
+            }
+        }
+        return items;
+    }
+
     public static CharSequence trim(CharSequence s) {
         int start = 0;
         int end = s.length();

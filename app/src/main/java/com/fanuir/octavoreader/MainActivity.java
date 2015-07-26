@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
                 EditText idField = (EditText) findViewById(R.id.story_id_field);
                 String storyId = idField.getText().toString();
                 try {
-                    int i = Integer.parseInt(storyId);
                     ArchiveStoryDownloadTask sf = new ArchiveStoryDownloadTask(v.getContext());
                     sf.execute(storyId);
                 } catch(NumberFormatException e) {

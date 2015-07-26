@@ -1,115 +1,92 @@
 package com.fanuir.octavoreader;
 
-import java.io.Serializable;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import java.util.ArrayList;
 
 /**
- * Created by ivy on 7/10/15.
+ * Created by ivy on 7/22/15.
  */
-public class Story implements Serializable {
+public class Story {
 
-    private String mTitle;
-    private ArrayList<String> mAuthors;
+    private JsonObject mMetadata;
     private ArrayList<Chapter> mChapters;
-    private ArrayList<String> mFandoms;
-    private String mStoryId;
-    private String mSummary;
-    private int mCurrentChapter;
-    private int mWordCount;
-    private String mSource;
 
-    private static final long serialVersionUID = 2492120520485903037L;
-
-    public Story(){
-        mAuthors = new ArrayList<String>();
-        mTitle = "Untitled";
-        mChapters = new ArrayList<Chapter>();
-        mStoryId = "000000";
-        mCurrentChapter = 1;
+    public Story(JsonObject metadata, ArrayList<Chapter> chapters){
+        this.mMetadata = metadata;
+        this.mChapters = chapters;
     }
 
-    public Story(String mTitle, ArrayList<String> mAuthors, ArrayList<String> mFandoms, String mStoryId, int mWordCount) {
-        this.mTitle = mTitle;
-        this.mAuthors = mAuthors;
-        this.mFandoms = mFandoms;
-        this.mStoryId = mStoryId;
-        this.mChapters = new ArrayList<Chapter>();
-        this.mCurrentChapter = 1;
-        this.mWordCount = mWordCount;
+    public JsonObject getMetadata(){
+        return mMetadata;
     }
 
-    public Story(String mTitle, String mSummary, ArrayList<String> mAuthors, ArrayList<Chapter> mChapters, ArrayList<String> mFandoms, String mStoryId, int mWordCount, String mSource) {
-        this.mTitle = mTitle;
-        this.mSummary = mSummary;
-        this.mAuthors = mAuthors;
-        this.mFandoms = mFandoms;
-        this.mStoryId = mStoryId;
-        this.mChapters = mChapters;
-        this.mCurrentChapter = 1;
-        this.mWordCount = mWordCount;
-        this.mSource = mSource;
-    }
-    public ArrayList<String> getAuthors() {
-        return mAuthors;
+    public String getFilename(){
+        return mMetadata.get("source").getAsString() + "-" + mMetadata.get("id").getAsString();
     }
 
-    public String getTitle() {
-        return mTitle;
+    public String getTitle(){
+        return mMetadata.get("title").getAsString();
     }
 
-    public String getSummary(){
-        return mSummary;
+    public JsonArray getAuthors(){
+        return mMetadata.get("authors").getAsJsonArray();
     }
 
-    public int getSize(){
-        return mChapters.size();
-    }
-
-    public int getWordCount(){
-        return mWordCount;
-    }
-
-    public String getStoryId() {
-        return mStoryId;
-    }
-
-    public ArrayList<String> getFandoms() {
-        return mFandoms;
-    }
-
-    public ArrayList<Chapter> getChapters() {
-        return mChapters;
+    public JsonArray getFandoms(){
+        return mMetadata.get("fandoms").getAsJsonArray();
     }
 
     public Chapter getChapter(int chapter) {
         // chapter is a number between 1-n, eg chapter 1, chapter 2...
-        if (chapter <= getSize() && chapter > 0) {
+        if (chapter <= mChapters.size() && chapter > 0) {
             return mChapters.get(chapter - 1);
         } else {
             return null;
         }
     }
 
+    public int getCurrentChapterNum(){
+        return mMetadata.get("current_chapter").getAsInt();
+    }
+
     public Chapter getCurrentChapter(){
-        return getChapter(mCurrentChapter);
+        return getChapter(getCurrentChapterNum());
+    }
+
+    public int getLastPosition(){
+        return mMetadata.get("last_position").getAsInt();
+    }
+
+    public void setLastPosition(int position){
+        mMetadata.addProperty("last_position", position);
+    }
+
+    public void setCurrentChapterNum(int chapter){
+        mMetadata.addProperty("current_chapter", chapter);
     }
 
     public Chapter getNextChapter(){
-        mCurrentChapter += 1;
-        return getChapter(mCurrentChapter);
+        setCurrentChapterNum(getCurrentChapterNum() + 1);
+        return getChapter(getCurrentChapterNum());
     }
 
     public Chapter getPrevChapter(){
-        mCurrentChapter -= 1;
-        return getChapter(mCurrentChapter);
-    }
-
-    public String getSource() {
-        return mSource;
+        setCurrentChapterNum(getCurrentChapterNum() - 1);
+        return getChapter(getCurrentChapterNum());
     }
 
     public String toString(){
-        String story = String.format("%s by %s: %d words\n%s", getTitle(), getAuthors(), getWordCount(), getFandoms());
+        String authors = LibraryUtils.printJsonArray(getAuthors());
+        String fandoms = LibraryUtils.printJsonArray(getFandoms());
+
+        int wordCount = mMetadata.get("word_count").getAsInt();
+        String story = String.format("%s by %s: %d words\n%s", getTitle(), authors, wordCount, fandoms);
         return story;
+    }
+
+    public ArrayList<Chapter> getChapters() {
+        return mChapters;
     }
 }

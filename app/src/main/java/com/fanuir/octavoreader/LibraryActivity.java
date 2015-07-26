@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -41,10 +42,10 @@ public class LibraryActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 JsonObject story = mStoryList.get(position);
+                String data = story.toString();
                 System.out.println(story);
                 Intent intent = ReaderActivity.newInstance(LibraryActivity.this);
-                String filename = story.get("source").getAsString() + "-" + story.get("id").getAsString();
-                intent.putExtra("filename", filename);
+                intent.putExtra("data", data);
                 startActivity(intent);
             }
         });

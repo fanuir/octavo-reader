@@ -86,14 +86,7 @@ public class StoryListAdapter extends BaseAdapter {
         JsonObject story = getItem(index);
         System.out.println(story);
         CharSequence title = LibraryUtils.trim(Html.fromHtml(String.format("<h4>%s</h4>", story.get("title").getAsString())));
-        String authors = "";
-        JsonArray authorList = story.get("authors").getAsJsonArray();
-        for(int i = 0; i < authorList.size(); i++){
-            authors += authorList.get(i).getAsString();
-            if(i != authorList.size() - 1){
-                authors += ", ";
-            }
-        }
+        String authors = LibraryUtils.printJsonArray(story.get("authors").getAsJsonArray());
 
         titleView.setText(title);
         idView.setText(story.get("id").getAsString());
