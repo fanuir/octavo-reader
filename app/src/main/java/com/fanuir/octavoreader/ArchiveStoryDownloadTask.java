@@ -28,9 +28,8 @@ public class ArchiveStoryDownloadTask extends AsyncTask<String, Void, Void>{
     protected Void doInBackground(String... params) {
         String storyId = params[0];
         mStory = ArchiveStoryUtils.downloadStory(storyId);
-        //StoryData storyData = ArchiveStoryUtils.getStoryMetadata(storyId);
         //Write story to file here
-        ArchiveStoryUtils.saveChaptersToFile(mContext, mStory.getChapters(), mStory.getFilename());
+        ArchiveStoryUtils.saveChaptersToFile(mContext, mStory.getChapters(), mStory.getId());
         ArchiveStoryUtils.saveMetadataToFile(mContext, mStory.getMetadata());
         return null;
     }

@@ -16,11 +16,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class LibraryActivity extends AppCompatActivity {
 
-    ArrayList<JsonObject> mStoryList;
+    List<JsonObject> mStoryList;
     StoryListAdapter mStoryAdapter;
     ListView mList;
 
@@ -42,10 +43,9 @@ public class LibraryActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 JsonObject story = mStoryList.get(position);
-                String data = story.toString();
-                System.out.println(story);
+                String storyId = story.get("id").getAsString();
                 Intent intent = ReaderActivity.newInstance(LibraryActivity.this);
-                intent.putExtra("data", data);
+                intent.putExtra("id", storyId);
                 startActivity(intent);
             }
         });
@@ -72,5 +72,18 @@ public class LibraryActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void reloadAllData(){
+        mStoryList = LibraryUtils.getStoryList(LibraryActivity.this);
+        mStoryAdapter.getData().clear();
+        mStoryAdapter.getData().addAll(mStoryList);
+        mStoryAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        reloadAllData();
     }
 }

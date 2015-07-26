@@ -105,7 +105,7 @@ public class ArchiveStoryUtils {
 
         StoryData metadata = new StoryData();
 
-        metadata.setId(id);
+        metadata.setId("ao3"+id);
         metadata.setTitle(title);
         metadata.setAuthors(as);
         metadata.setFandoms(fs);
@@ -215,6 +215,29 @@ public class ArchiveStoryUtils {
 
         JsonObject data = (JsonObject) jsonParser.parse(json);
         return data;
+    }
+
+    public static JsonObject loadStoryMetadataFromFile(Context context, String id){
+        JsonArray metadata;
+        JsonParser jsonParser = new JsonParser();
+
+        try {
+            FileInputStream fis = context.openFileInput(Constants.STORY_METADATA_FILENAME);
+            ObjectInputStream is = new ObjectInputStream(fis);
+            metadata = (JsonArray) jsonParser.parse((String) is.readObject());
+
+        } catch (Exception e){
+            metadata = new JsonArray();
+            e.printStackTrace();
+        }
+
+        for(int i = 0; i < metadata.size(); i++){
+            JsonObject curr = metadata.get(i).getAsJsonObject();
+            if(curr.get("id").getAsString().equals(id)){
+                return curr;
+            }
+        }
+        return null;
     }
 
     public static void saveMetadataToFile(Context context, JsonObject data){

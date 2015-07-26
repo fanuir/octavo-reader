@@ -9,6 +9,8 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -32,9 +34,10 @@ public class ReaderActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            final String data;
-            data = extras.getString("data");
-            final JsonObject metadata = (JsonObject) new JsonParser().parse(data);
+            final String id;
+            id = extras.getString("id");
+            final JsonObject metadata = ArchiveStoryUtils.loadStoryMetadataFromFile(this, id);
+
             mWebReader = (WebReader) findViewById(R.id.web_reader);
             Toast.makeText(ReaderActivity.this, "Opening Story...", Toast.LENGTH_SHORT).show();
             uiHandler = new Handler();
@@ -64,31 +67,26 @@ public class ReaderActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         } else if(id == R.id.action_next_chap) {
-            Toast.makeText(ReaderActivity.this, "Loading Chapter...", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(ReaderActivity.this, "Loading Chapter...", Toast.LENGTH_SHORT).show();
             uiHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     mWebReader.loadNextChapter();
                 }
             });
-
             return true;
         } else if(id == R.id.action_prev_chap) {
-            Toast.makeText(ReaderActivity.this, "Loading Chapter...", Toast.LENGTH_SHORT).show();
-
+            //Toast.makeText(ReaderActivity.this, "Loading Chapter...", Toast.LENGTH_SHORT).show();
             uiHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     mWebReader.loadPrevChapter();
                 }
             });
-
             return true;
         } else if(id == R.id.action_bookmark) {
-            WebReader reader = (WebReader) findViewById(R.id.web_reader);
-            int pos = reader.getScrollY();
-
-            System.out.println(String.format("Position: %d", pos));
+            float pos = mWebReader.calculateProgress();
+            System.out.println(String.format("Position: %f", pos));
             return true;
         }
 
@@ -96,18 +94,37 @@ public class ReaderActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState){
+    public void onPause(){
+        super.onPause();
         if(mWebReader != null){
-            //save read state here
+            mWebReader.saveStoryState();
             System.out.println("Saved story progress.");
         }
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState){
-        if(mWebReader != null){
-            //save read state here
+    public void onResume(){
+        super.onResume();
+        if(mWebReader != null && mWebReader.getStory() != null){
+            mWebReader.loadStoryState();
             System.out.println("Restored story progress.");
         }
     }
+
+    @Override
+    public void onBackPressed(){
+        mWebReader.saveStoryState();
+        System.out.println("Back button pressed, saved.");
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        if(mWebReader != null && mWebReader.getStory() != null){
+            mWebReader.saveStoryState();
+            System.out.println("Saved story progress.");
+        }
+    }
+
 }

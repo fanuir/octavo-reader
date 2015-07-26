@@ -6,7 +6,6 @@
 
     <com.fanuir.octavoreader.WebReader
         android:id="@+id/web_reader"
-        android:background="@android:color/transparent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </com.fanuir.octavoreader.WebReader>

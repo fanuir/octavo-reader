@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ import com.google.gson.JsonObject;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by ivy on 7/9/15.
@@ -25,8 +27,17 @@ public class WebReader extends WebView {
     public WebReader(Context context, AttributeSet attrs){
         super(context, attrs);
         updateHeaders(context);
-        System.out.println(headers);
+        setHorizontalScrollBarEnabled(false);
         setFontSize(context);
+        setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int progress) {
+                if ( view.getProgress()==100) {
+                    System.out.println("Progress 100%");
+                    loadLastPosition();
+                }
+            }
+        });
     }
 
     public String getFontHtml(Context context){
@@ -61,17 +72,25 @@ public class WebReader extends WebView {
 
     public void loadStory(JsonObject metadata){
         try {
-            String filename = metadata.get("source").getAsString() + "-" + metadata.get("id").getAsString();
+            String filename = metadata.get("id").getAsString();
             FileInputStream fis = getContext().openFileInput(filename);
             ObjectInputStream is = new ObjectInputStream(fis);
 
             ArrayList<Chapter> chapters = (ArrayList<Chapter>) is.readObject();
             mStory = new Story(metadata, chapters);
-            Chapter currChapter = mStory.getCurrentChapter();
-            String content = headers + "<body>" + currChapter.getContent() + "</body>";
-            this.loadDataWithBaseURL("file:///android_asset/", content, "text/html", "UTF-8", null);
+            mStory.setLastOpened(new Date().getTime());
+            loadLastChapter();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void loadLastChapter(){
+        Chapter chapter = mStory.getCurrentChapter();
+        if(chapter != null) {
+            updateHeaders(getContext());
+            String content = headers + "<body>" + chapter.getContent() + "</body>";
+            this.loadDataWithBaseURL("file:///android_asset/", content, "text/html", "UTF-8", null);
         }
     }
 
@@ -81,6 +100,7 @@ public class WebReader extends WebView {
             updateHeaders(getContext());
             String content = headers + "<body>" + chapter.getContent() + "</body>";
             this.loadDataWithBaseURL("file:///android_asset/",content, "text/html","UTF-8", null);
+            mStory.setLastPosition(0);
         } else {
             Toast.makeText(getContext(), "End of story.", Toast.LENGTH_SHORT).show();
         }
@@ -92,6 +112,7 @@ public class WebReader extends WebView {
             updateHeaders(getContext());
             String content = headers + "<body>" + chapter.getContent() + "</body>";
             this.loadDataWithBaseURL("file:///android_asset/", content, "text/html","UTF-8", null);
+            mStory.setLastPosition(0);
         } else {
             Toast.makeText(getContext(), "First chapter.", Toast.LENGTH_SHORT).show();
         }
@@ -102,6 +123,36 @@ public class WebReader extends WebView {
     }
 
     public void saveStoryState(){
+        float position = calculateProgress();
+        mStory.setLastPosition(position);
+        System.out.println("Last position %: " + mStory.getLastPosition());
+        ArchiveStoryUtils.saveMetadataToFile(getContext(), mStory.getMetadata());
+    }
 
+    public void loadStoryState(){
+        mStory.setMetadata(ArchiveStoryUtils.loadStoryMetadataFromFile(getContext(), mStory.getId()));
+        System.out.println("Loaded current chapter: " + mStory.getCurrentChapter());
+        loadLastChapter();
+    }
+
+    public void loadLastPosition(){
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                float size = getContentHeight() - getTop();
+                float positionF = size * mStory.getLastPosition();
+                int position = Math.round(getTop() + positionF);
+                scrollTo(0, position);
+                System.out.println("Scrolled to last position.");
+            }
+        }, 500);
+    }
+
+    public float calculateProgress() {
+        float positionTopView = getTop();
+        float contentHeight = getContentHeight();
+        float currentScrollPosition = getScrollY();
+        float percent = (currentScrollPosition - positionTopView) / contentHeight;
+        return percent;
     }
 }

@@ -27,6 +27,10 @@ public class StoryListAdapter extends BaseAdapter {
         this.mStoryList = mStoryList;
     }
 
+    public List<JsonObject> getData(){
+        return mStoryList;
+    }
+
     @Override
     public JsonObject getItem(int index){
         return mStoryList.get(index);

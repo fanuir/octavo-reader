@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by ivy on 7/22/15.
@@ -22,8 +23,12 @@ public class Story {
         return mMetadata;
     }
 
-    public String getFilename(){
-        return mMetadata.get("source").getAsString() + "-" + mMetadata.get("id").getAsString();
+    public void setMetadata(JsonObject metadata){
+        mMetadata = metadata;
+    }
+
+    public String getId(){
+        return mMetadata.get("id").getAsString();
     }
 
     public String getTitle(){
@@ -41,6 +46,7 @@ public class Story {
     public Chapter getChapter(int chapter) {
         // chapter is a number between 1-n, eg chapter 1, chapter 2...
         if (chapter <= mChapters.size() && chapter > 0) {
+            setCurrentChapterNum(chapter);
             return mChapters.get(chapter - 1);
         } else {
             return null;
@@ -55,26 +61,29 @@ public class Story {
         return getChapter(getCurrentChapterNum());
     }
 
-    public int getLastPosition(){
-        return mMetadata.get("last_position").getAsInt();
+    public float getLastPosition(){
+        return mMetadata.get("last_position").getAsFloat();
     }
 
-    public void setLastPosition(int position){
+    public void setLastPosition(float position){
         mMetadata.addProperty("last_position", position);
+    }
+
+    public void setLastOpened(long lastOpened){
+        mMetadata.addProperty("last_opened", lastOpened);
     }
 
     public void setCurrentChapterNum(int chapter){
         mMetadata.addProperty("current_chapter", chapter);
+        System.out.println("Current chapter is: " + chapter);
     }
 
     public Chapter getNextChapter(){
-        setCurrentChapterNum(getCurrentChapterNum() + 1);
-        return getChapter(getCurrentChapterNum());
+        return getChapter(getCurrentChapterNum()+1);
     }
 
     public Chapter getPrevChapter(){
-        setCurrentChapterNum(getCurrentChapterNum() - 1);
-        return getChapter(getCurrentChapterNum());
+        return getChapter(getCurrentChapterNum()-1);
     }
 
     public String toString(){
