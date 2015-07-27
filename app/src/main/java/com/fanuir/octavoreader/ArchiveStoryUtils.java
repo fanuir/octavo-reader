@@ -69,6 +69,9 @@ public class ArchiveStoryUtils {
             as.add(author.text());
         }
 
+        /* RATING */
+        String rating = fic.select(Constants.SEL_ARCHIVE_RATING).text();
+
         /* Word count */
         int wordCount = Integer.parseInt(fic.select(Constants.SEL_ARCHIVE_WORD_COUNT).text());
 
@@ -96,11 +99,42 @@ public class ArchiveStoryUtils {
         } catch (NumberFormatException e){
             totalChapters = -1;
         }
+
+        String status;
+        boolean following;
+        if (availChapters == totalChapters){
+            status = "Complete";
+            following = false;
+        } else {
+            status = "In Progress";
+            following = true;
+        }
+
         /* Fandoms */
         ArrayList<String> fs = new ArrayList<String>();
         Elements fandoms = fic.select(Constants.SEL_ARCHIVE_FANDOMS);
         for(Element fandom : fandoms){
             fs.add(fandom.text());
+        }
+
+        /* Characters */
+        ArrayList<String> chars = new ArrayList<String>();
+        Elements characters = fic.select(Constants.SEL_ARCHIVE_CHARACTERS);
+        for(Element character : characters){
+            chars.add(character.text());
+        }
+
+        /* Relationships */
+        ArrayList<String> ships = new ArrayList<String>();
+        Elements relationships = fic.select(Constants.SEL_ARCHIVE_RELATIONSHIPS);
+        for(Element relationship : relationships){
+            ships.add(relationship.text());
+        }
+        /* Additional Tags */
+        ArrayList<String> ts = new ArrayList<String>();
+        Elements tags = fic.select(Constants.SEL_ARCHIVE_TAGS);
+        for(Element tag : tags){
+            ts.add(tag.text());
         }
 
         StoryData metadata = new StoryData();
@@ -109,8 +143,14 @@ public class ArchiveStoryUtils {
         metadata.setTitle(title);
         metadata.setAuthors(as);
         metadata.setFandoms(fs);
+        metadata.setCharacters(chars);
+        metadata.setTags(ts);
+        metadata.setRating(rating);
+        metadata.setRelationships(ships);
         metadata.setAvailChapters(availChapters);
         metadata.setTotalChapters(totalChapters);
+        metadata.setStatus(status);
+        metadata.setFollowing(following);
         metadata.setSummary(summary);
         metadata.setWordCount(wordCount);
         metadata.setSource(Constants.ARCHIVE_PREFIX);
@@ -169,6 +209,8 @@ public class ArchiveStoryUtils {
         System.out.println(title);
         String notes = null;
         String endnotes = null;
+
+        // TODO: Fix notes on first chapters/single chapter fics
         try {
             notes = chap.select(Constants.SEL_ARCHIVE_CHAPTER_NOTES).html();
             endnotes = chap.select(Constants.SEL_ARCHIVE_CHAPTER_ENDNOTES).html();

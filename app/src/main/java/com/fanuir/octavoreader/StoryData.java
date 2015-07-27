@@ -15,6 +15,30 @@ public class StoryData {
 
     public String title;
 
+    public String rating;
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
+    public void setRelationships(ArrayList<String> relationships) {
+        this.relationships = relationships;
+    }
+
+    public void setCharacters(ArrayList<String> characters) {
+        this.characters = characters;
+    }
+
+    public void setTags(ArrayList<String> tags) {
+        this.tags = tags;
+    }
+
+    public ArrayList<String> relationships;
+
+    public ArrayList<String> characters;
+
+    public ArrayList<String> tags;
+
     public ArrayList<String> authors;
 
     public ArrayList<String> fandoms;
@@ -31,6 +55,8 @@ public class StoryData {
     public int currentChapter;
 
     public String status;
+
+    public boolean isFollowing;
 
     @SerializedName("last_updated")
     public String lastUpdated;
@@ -199,5 +225,9 @@ public class StoryData {
 
     public void setLastPosition(int lastPosition) {
         this.lastPosition = lastPosition;
+    }
+
+    public void setFollowing(boolean following) {
+        this.isFollowing = following;
     }
 }

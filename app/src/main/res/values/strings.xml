@@ -21,7 +21,7 @@
     <string name="action_next_chap">Next Chapter</string>
     <string name="action_prev_chap">Previous Chapter</string>
     <string name="action_bookmark">Bookmark</string>
-
+    <string name="action_chapter_index">Chapter Index</string>
 
 
 </resources>

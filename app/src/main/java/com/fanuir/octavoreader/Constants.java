@@ -15,6 +15,10 @@ public class Constants {
     public static final String SEL_ARCHIVE_WORD_COUNT = "dt:contains(Words) + dd";
     public static final String SEL_ARCHIVE_CHAPTER_STATS = "dt:contains(Chapters) + dd";
     public static final String SEL_ARCHIVE_FANDOMS = "dt.fandom + dd li";
+    public static final String SEL_ARCHIVE_CHARACTERS = "dt.character + dd li";
+    public static final String SEL_ARCHIVE_TAGS = "dt.freeform + dd li";
+    public static final String SEL_ARCHIVE_RATING = "dt.rating + dd li";
+    public static final String SEL_ARCHIVE_RELATIONSHIPS = "dt.relationship + dd li";
     public static final String SEL_ARCHIVE_NEXT_CHAPTER_LINK = "li.chapter.next a";
     public static final String SEL_ARCHIVE_CHAPTER_TITLE = "div.chapter h3.title";
     public static final String SEL_ARCHIVE_CHAPTER_NOTES = "div#notes blockquote";
@@ -23,7 +27,5 @@ public class Constants {
     public static final String SEL_ARCHIVE_KUDOS = "dt + dd.kudos";
     public static final String SEL_ARCHIVE_PUBLISHED = "dt + dd.published";
     public static final String SEL_ARCHIVE_LAST_UPDATED = "dt + dd.status";
-
-
 
 }

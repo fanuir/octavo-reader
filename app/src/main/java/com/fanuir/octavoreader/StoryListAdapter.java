@@ -12,6 +12,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.text.NumberFormat;
 import java.util.List;
 
 /**
@@ -51,12 +52,14 @@ public class StoryListAdapter extends BaseAdapter {
         public final TextView idView;
         public final TextView summaryView;
         public final TextView authorView;
+        public final TextView infoView;
 
-        public ViewHolder(TextView titleView, TextView idView, TextView authorView, TextView summaryView ){
+        public ViewHolder(TextView titleView, TextView idView, TextView authorView, TextView summaryView, TextView infoView ){
             this.titleView = titleView;
             this.idView = idView;
             this.summaryView = summaryView;
             this.authorView = authorView;
+            this.infoView = infoView;
         }
     }
 
@@ -67,6 +70,7 @@ public class StoryListAdapter extends BaseAdapter {
         TextView idView;
         TextView authorView;
         TextView summaryView;
+        TextView infoView;
 
         if (convertView == null){
             convertView = LayoutInflater.from(mContext)
@@ -75,9 +79,10 @@ public class StoryListAdapter extends BaseAdapter {
             titleView = (TextView) convertView.findViewById(R.id.layout_story_title);
             idView = (TextView) convertView.findViewById(R.id.layout_story_id);
             summaryView = (TextView) convertView.findViewById(R.id.layout_story_summary);
-            authorView = (TextView) convertView.findViewById(R.id.layout_story_authors);
+            authorView = (TextView) convertView.findViewById(R.id.layout_story_author_line);
+            infoView = (TextView) convertView.findViewById(R.id.layout_story_info);
 
-            convertView.setTag(new ViewHolder(titleView, idView, authorView, summaryView));
+            convertView.setTag(new ViewHolder(titleView, idView, authorView, summaryView, infoView));
         } else {
             ViewHolder viewHolder = (ViewHolder) convertView.getTag();
 
@@ -85,17 +90,25 @@ public class StoryListAdapter extends BaseAdapter {
             idView = viewHolder.idView;
             authorView = viewHolder.authorView;
             summaryView = viewHolder.summaryView;
+            infoView = viewHolder.infoView;
         }
 
         JsonObject story = getItem(index);
         //System.out.println(story);
-        CharSequence title = LibraryUtils.trim(Html.fromHtml(String.format("<h4>%s</h4>", story.get("title").getAsString())));
+        CharSequence title = LibraryUtils.trim(Html.fromHtml(String.format("<h5>%s</h5>", story.get("title").getAsString())));
         String authors = LibraryUtils.printJsonArray(story.get("authors").getAsJsonArray());
+        String fandoms = LibraryUtils.printJsonArray(story.get("fandoms").getAsJsonArray());
+        String totalChapters = (story.get("total_chapters").getAsInt() == -1) ? "?" : story.get("total_chapters").toString();
+        String authorLine = String.format("%s - <i>%s</i>", authors, fandoms);
+        String infoLine = String.format("<b>Chapters:</b> %d/%s <b>Words:</b> %s",
+                story.get("avail_chapters").getAsInt(), totalChapters,
+                NumberFormat.getIntegerInstance().format(story.get("word_count").getAsInt()));
 
         titleView.setText(title);
         idView.setText(story.get("id").getAsString());
-        authorView.setText(authors);
+        authorView.setText(Html.fromHtml(authorLine));
         summaryView.setText(story.get("summary").getAsString());
+        infoView.setText(Html.fromHtml(infoLine));
 
         return convertView;
     }

@@ -1,6 +1,10 @@
 package com.fanuir.octavoreader;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +14,9 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReaderActivity extends AppCompatActivity {
 
@@ -53,6 +60,28 @@ public class ReaderActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu){
+        if(mWebReader != null && mWebReader.getStory() != null){
+            MenuItem prev = menu.findItem(R.id.action_prev_chap);
+            MenuItem next = menu.findItem(R.id.action_next_chap);
+
+            prev.setVisible(true);
+            next.setVisible(true);
+
+            if(mWebReader.isFirstChapter()){
+                prev.setVisible(false);
+            }
+            if(mWebReader.isLastChapter()){
+                next.setVisible(false);
+            }
+            if(mWebReader.getStory().getChapters().size() == 1){
+                menu.removeItem(R.id.action_chapter_index);
+            }
+        }
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -80,6 +109,15 @@ public class ReaderActivity extends AppCompatActivity {
             float pos = mWebReader.calculateProgress();
             //add bookmark here
             System.out.println(String.format("Position: %f", pos));
+            return true;
+        } else if(id == R.id.action_chapter_index){
+            System.out.println("Show table of contents");
+            if(mWebReader.getStory().getChapters().size() > 1) {
+                ChapterIndexDialogFragment chapterIndexDialog = new ChapterIndexDialogFragment();
+                chapterIndexDialog.show(getFragmentManager(), "chapterIndex");
+            } else {
+                Toast.makeText(ReaderActivity.this, "Single chapter fic.", Toast.LENGTH_SHORT).show();
+            }
             return true;
         }
 
@@ -109,6 +147,30 @@ public class ReaderActivity extends AppCompatActivity {
             mWebReader.saveStoryState();
             System.out.println("Saved story progress.");
         }
+    }
+
+    public static class ChapterIndexDialogFragment extends DialogFragment {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final WebReader reader = (WebReader) getActivity().findViewById(R.id.web_reader);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            ArrayList<Chapter> chapters = reader.getStory().getChapters();
+            String[] chapterTitles = new String[chapters.size()];
+            for(int i = 0; i < chapters.size(); i++){
+                chapterTitles[i] = chapters.get(i).getTitle();
+            }
+            builder.setTitle("Chapter Index")
+                    .setItems(chapterTitles, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            reader.loadChapter(which);
+                        }
+                    });
+            return builder.create();
+
+        }
+
     }
 
 }

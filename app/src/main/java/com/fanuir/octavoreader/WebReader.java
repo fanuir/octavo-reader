@@ -67,6 +67,14 @@ public class WebReader extends WebView {
         return headers;
     }
 
+    public boolean isFirstChapter(){
+        return mStory.getCurrentChapterNum() == 1;
+    }
+
+    public boolean isLastChapter(){
+        return mStory.getCurrentChapterNum() == mStory.getChapters().size();
+    }
+
     public void setFontSize(Context context){
         WebSettings settings = getSettings();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -86,6 +94,16 @@ public class WebReader extends WebView {
             loadLastChapter();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void loadChapter(int index){
+        Chapter chapter = mStory.getChapter(index+1);
+        if(chapter != null) {
+            updateHeaders(getContext());
+            String content = headers + "<body>" + chapter.getContent() + "</body>";
+            this.loadDataWithBaseURL("file:///android_asset/", content, "text/html", "UTF-8", null);
+            mStory.setLastPosition(0);
         }
     }
 

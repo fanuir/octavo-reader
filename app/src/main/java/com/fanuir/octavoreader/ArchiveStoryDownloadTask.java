@@ -29,8 +29,10 @@ public class ArchiveStoryDownloadTask extends AsyncTask<String, Void, Void>{
         String storyId = params[0];
         mStory = ArchiveStoryUtils.downloadStory(storyId);
         //Write story to file here
-        ArchiveStoryUtils.saveChaptersToFile(mContext, mStory.getChapters(), mStory.getId());
-        ArchiveStoryUtils.saveMetadataToFile(mContext, mStory.getMetadata());
+        if(mStory != null) {
+            ArchiveStoryUtils.saveChaptersToFile(mContext, mStory.getChapters(), mStory.getId());
+            ArchiveStoryUtils.saveMetadataToFile(mContext, mStory.getMetadata());
+        }
         return null;
     }
 
@@ -45,7 +47,7 @@ public class ArchiveStoryDownloadTask extends AsyncTask<String, Void, Void>{
             //i.putExtra("filename", mStory.());
             //mContext.startActivity(i);
         } else {
-            Toast.makeText(mContext, "Failed.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Failed. Please check your network connection.", Toast.LENGTH_SHORT).show();
         }
     }
 }
