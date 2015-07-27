@@ -321,6 +321,9 @@ public class ArchiveStoryUtils {
                 System.out.println("Story already in array.");
                 return;
             }  else if(curr.get("title").getAsString().equals(jsonObject.get("title").getAsString())){
+                /* TODO: only replace story if something other than last_synced, last_opened different, etc
+                    Don't delete story progress
+                 */
                 jsonArray.set(i, jsonObject);
                 System.out.println("Story updated.");
                 return;

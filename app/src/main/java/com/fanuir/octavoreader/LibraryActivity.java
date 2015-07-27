@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -37,6 +38,9 @@ public class LibraryActivity extends AppCompatActivity {
         mStoryList = LibraryUtils.getStoryList(LibraryActivity.this);
 
         mList = (ListView) findViewById(R.id.library_list_view);
+        TextView emptyView = (TextView) findViewById(R.id.library_empty);
+        mList.setEmptyView(emptyView);
+
         mStoryAdapter = new StoryListAdapter(LibraryActivity.this, mStoryList);
 
         mList.setAdapter(mStoryAdapter);

@@ -2,27 +2,44 @@ package com.fanuir.octavoreader;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    Button mGetStoryButton;
-    Button mReaderButton;
-    Button mLibraryButton;
+    private String[] mDrawerMenuItems;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mGetStoryButton = (Button) findViewById(R.id.get_story_button);
+        mDrawerMenuItems = getResources().getStringArray(R.array.drawer_menu_choices);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.drawer_menu);
+
+        mDrawerList.setAdapter(new ArrayAdapter<String>(MainActivity.this,
+                R.layout.drawer_list_item, mDrawerMenuItems));
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println("Clicked drawer item.");
+            }
+        });
+
+        Button mGetStoryButton = (Button) findViewById(R.id.get_story_button);
         mGetStoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -32,26 +49,13 @@ public class MainActivity extends AppCompatActivity {
                     ArchiveStoryDownloadTask sf = new ArchiveStoryDownloadTask(v.getContext());
                     sf.execute(storyId);
                 } catch(NumberFormatException e) {
-                    //e.printStackTrace();
+                    e.printStackTrace();
                     Toast.makeText(v.getContext(), "Input must be numeric.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        mReaderButton = (Button) findViewById(R.id.reader_button);
-        mReaderButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EditText idField = (EditText) findViewById(R.id.story_id_field);
-                String storyId = idField.getText().toString();
-
-                Intent intent = ReaderActivity.newInstance(MainActivity.this);
-                intent.putExtra("id", storyId);
-                startActivity(intent);
-            }
-        });
-
-        mLibraryButton = (Button) findViewById(R.id.library_button);
+        Button mLibraryButton = (Button) findViewById(R.id.library_button);
         mLibraryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

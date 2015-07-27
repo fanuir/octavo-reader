@@ -10,4 +10,12 @@
         android:layout_height="match_parent">
     </ListView>
 
+    <TextView
+        android:id="@+id/library_empty"
+        android:text="@string/library_empty_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="20sp"
+        android:gravity="center" />
+
 </RelativeLayout>
