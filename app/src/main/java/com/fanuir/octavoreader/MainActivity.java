@@ -45,12 +45,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 EditText idField = (EditText) findViewById(R.id.story_id_field);
                 String storyId = idField.getText().toString();
-                try {
-                    ArchiveStoryDownloadTask sf = new ArchiveStoryDownloadTask(v.getContext());
-                    sf.execute(storyId);
-                } catch(NumberFormatException e) {
-                    e.printStackTrace();
-                    Toast.makeText(v.getContext(), "Input must be numeric.", Toast.LENGTH_SHORT).show();
+                if(!storyId.equals("")) {
+                    try {
+                        ArchiveStoryDownloadTask sf = new ArchiveStoryDownloadTask(v.getContext());
+                        sf.execute(storyId);
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                        Toast.makeText(v.getContext(), "Input must be numeric.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(v.getContext(), "Please input an id.", Toast.LENGTH_SHORT).show();
                 }
             }
         });

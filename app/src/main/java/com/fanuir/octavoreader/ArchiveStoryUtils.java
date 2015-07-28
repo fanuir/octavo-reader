@@ -19,9 +19,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -29,14 +27,16 @@ import java.util.Map;
  */
 public class ArchiveStoryUtils {
 
-    public static Story downloadStory(String id){
+    public static Story downloadStory(ArchiveStoryDownloadTask task, String id){
 
         Document fic;
         String url = String.format("http://archiveofourown.org/works/%s?view_adult=true",id);
 
         try {
             fic = Jsoup.connect(url).get();
-            return parseStory(fic, id);
+            task.setMax(0);
+            task.doProgress(1);
+            return parseStory(fic, id, task);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -174,13 +174,16 @@ public class ArchiveStoryUtils {
 
     }
 
-    public static Story parseStory(Document fic, String id){
+    public static Story parseStory(Document fic, String id, ArchiveStoryDownloadTask task){
         System.out.println("PARSING STORY WITH ID: " + id);
 
         StoryData metadata = parseStoryMetadata(fic, id);
         JsonObject data = metadataToJson(metadata);
 
-        ArrayList<Chapter> chapters = getChapters(fic, metadata.getAvailChapters());
+        int numChaps = metadata.getAvailChapters();
+        task.setMax(numChaps);
+
+        ArrayList<Chapter> chapters = getChapters(fic, numChaps, task);
         Chapter first = chapters.get(0);
         String content = String.format("<h2>%s</h2>%s", metadata.getTitle(), first.getContent());
         first.setContent(content);
@@ -188,7 +191,7 @@ public class ArchiveStoryUtils {
         return new Story(data, chapters);
     }
 
-    public static ArrayList<Chapter> getChapters(Document fic, int numChaps){
+    public static ArrayList<Chapter> getChapters(Document fic, int numChaps, ArchiveStoryDownloadTask task){
         ArrayList<Chapter> chapters = new ArrayList<Chapter>();
 
         Chapter first = getChapter(fic);
@@ -201,6 +204,7 @@ public class ArchiveStoryUtils {
             for (int i = 1; i < numChaps; i++) {
                 try {
                     nextChap = Jsoup.connect(nextUrl).get();
+                    task.doProgress(i+1);
                     chapters.add(getChapter(nextChap));
                     nextUrl = String.format("http://archiveofourown.org%s?view_adult=true", nextChap.select(Constants.SEL_ARCHIVE_NEXT_CHAPTER_LINK).attr("href"));
                     System.out.println(nextUrl);
@@ -219,7 +223,6 @@ public class ArchiveStoryUtils {
         String notes = null;
         String endnotes = null;
 
-        // TODO: Fix notes on first chapters/single chapter fics
         try {
             notes = chap.select(Constants.SEL_ARCHIVE_CHAPTER_NOTES).html();
             endnotes = chap.select(Constants.SEL_ARCHIVE_CHAPTER_ENDNOTES).html();
@@ -244,6 +247,7 @@ public class ArchiveStoryUtils {
             rawContent.prepend("<h3>" + title + "</h3>");
         }
         String content = rawContent.html();
+
         return new Chapter(title, notes, content);
     }
 
