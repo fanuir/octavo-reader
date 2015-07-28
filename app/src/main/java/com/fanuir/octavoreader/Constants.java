@@ -28,4 +28,7 @@ public class Constants {
     public static final String SEL_ARCHIVE_PUBLISHED = "dt + dd.published";
     public static final String SEL_ARCHIVE_LAST_UPDATED = "dt + dd.status";
 
+    public static final float SWIPE_MIN_DISTANCE = 120;
+    public static final int SWIPE_THRESHOLD_VELOCITY = 200;
+    public static final float SWIPE_HORIZONTAL_Y_MAX = 100;
 }

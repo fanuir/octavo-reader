@@ -2,21 +2,21 @@ package com.fanuir.octavoreader;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -44,16 +44,17 @@ public class LibraryActivity extends AppCompatActivity {
         mStoryAdapter = new StoryListAdapter(LibraryActivity.this, mStoryList);
 
         mList.setAdapter(mStoryAdapter);
-        mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        final GestureDetector gestureDetector = new GestureDetector(LibraryActivity.this, new LibraryGestureListener());
+        View.OnTouchListener gestureListener = new View.OnTouchListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                JsonObject story = mStoryList.get(position);
-                String storyId = story.get("id").getAsString();
-                Intent intent = ReaderActivity.newInstance(LibraryActivity.this);
-                intent.putExtra("id", storyId);
-                startActivity(intent);
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
             }
-        });
+        };
+
+        mList.setOnTouchListener(gestureListener);
+
     }
 
     @Override
@@ -91,4 +92,92 @@ public class LibraryActivity extends AppCompatActivity {
         super.onResume();
         reloadAllData();
     }
+
+    public void onSwipeLeft(int position){
+        //Toast.makeText(LibraryActivity.this, "Swiped left.", Toast.LENGTH_SHORT).show();
+        View mainView = mList.getChildAt(position).findViewById(R.id.story_item_view_main);
+
+        ViewSwitcher viewSwitcher = (ViewSwitcher) mList.getChildAt(position).findViewById(R.id.story_item_view_switcher);
+        if(viewSwitcher.getCurrentView() != mainView) {
+            Animation animIn = AnimationUtils.loadAnimation(LibraryActivity.this, R.anim.slide_in_right);
+            Animation animOut = AnimationUtils.loadAnimation(LibraryActivity.this, R.anim.slide_out_left);
+            viewSwitcher.setInAnimation(animIn);
+            viewSwitcher.setOutAnimation(animOut);
+            viewSwitcher.showPrevious();
+        }
+    }
+
+    public void onSwipeRight(int position){
+        //Toast.makeText(LibraryActivity.this, "Swiped right.", Toast.LENGTH_SHORT).show();
+        View moreView = mList.getChildAt(position).findViewById(R.id.story_item_view_more);
+        ViewSwitcher viewSwitcher = (ViewSwitcher) mList.getChildAt(position).findViewById(R.id.story_item_view_switcher);
+        if(viewSwitcher.getCurrentView() != moreView) {
+            Animation animIn = AnimationUtils.loadAnimation(LibraryActivity.this, R.anim.slide_in_left);
+            Animation animOut = AnimationUtils.loadAnimation(LibraryActivity.this, R.anim.slide_out_right);
+            viewSwitcher.setInAnimation(animIn);
+            viewSwitcher.setOutAnimation(animOut);
+            viewSwitcher.showNext();
+        }
+    }
+
+    public void onItemClick(int adapterIndex, int viewPos){
+        ViewSwitcher viewSwitcher = (ViewSwitcher) mList.getChildAt(viewPos).findViewById(R.id.story_item_view_switcher);
+        View mainView = mList.getChildAt(viewPos).findViewById(R.id.story_item_view_main);
+        if(viewSwitcher.getCurrentView() == mainView) {
+            JsonObject story = mStoryList.get(adapterIndex);
+            String storyId = story.get("id").getAsString();
+            Intent intent = ReaderActivity.newInstance(LibraryActivity.this);
+            intent.putExtra("id", storyId);
+            startActivity(intent);
+        } else {
+            System.out.println("View pos: " + viewPos);
+            System.out.println("Second view clicked.");
+        }
+    }
+
+    class LibraryGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final String DEBUG_TAG = "Gestures";
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e){
+            System.out.println("X: " + e.getX() + "Y: " + e.getY());
+            int adapterIndex = mList.pointToPosition((int)e.getX(), (int)e.getY());
+            int visibleIndex = mList.getFirstVisiblePosition();
+            int pos = adapterIndex - visibleIndex;
+            onItemClick(adapterIndex, pos);
+            return false;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2,
+                               float velocityX, float velocityY){
+            try {
+                if (e1.getX() - e2.getX() > Constants.SWIPE_MIN_DISTANCE
+                        && Math.abs(e1.getY() - e2.getY()) < Constants.SWIPE_HORIZONTAL_Y_MAX
+                        && Math.abs(velocityX) > Constants.SWIPE_THRESHOLD_VELOCITY) {
+                    int adapterIndex = mList.pointToPosition((int)e1.getX(), (int)e1.getY());
+                    int visibleIndex = mList.getFirstVisiblePosition();
+                    int pos = adapterIndex - visibleIndex;
+                    onSwipeLeft(pos);
+                } else if (e2.getX() - e1.getX() > Constants.SWIPE_MIN_DISTANCE
+                        && Math.abs(e1.getY() - e2.getY()) < Constants.SWIPE_HORIZONTAL_Y_MAX
+                        && Math.abs(velocityX) > Constants.SWIPE_THRESHOLD_VELOCITY) {
+                    int adapterIndex = mList.pointToPosition((int)e1.getX(), (int)e1.getY());
+                    int visibleIndex = mList.getFirstVisiblePosition();
+                    int pos = adapterIndex - visibleIndex;
+                    onSwipeRight(pos);
+                }
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+            return false;
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e){
+            return true;
+        }
+    }
+
 }

@@ -22,7 +22,7 @@ import java.util.Date;
 public class WebReader extends WebView {
 
     private Story mStory;
-    private String headers;
+    private String mHeaders;
 
     public WebReader(Context context, AttributeSet attrs){
         super(context, attrs);
@@ -58,13 +58,13 @@ public class WebReader extends WebView {
     }
 
     public String updateHeaders(Context context){
-        headers = "<head>"
+        mHeaders = "<head>"
                 + "<style>img{display: inline; height: auto; max-width: 100%;}"
                 + getFontHtml(context)
                 + "</style><link rel='stylesheet' type='text/css' href='reader.css'>"
                 + "<script src='reader.js'></script>"
                 + "</head>";
-        return headers;
+        return mHeaders;
     }
 
     public boolean isFirstChapter(){
@@ -75,10 +75,15 @@ public class WebReader extends WebView {
         return mStory.getCurrentChapterNum() == mStory.getChapters().size();
     }
 
+    public String getHeaders(){
+        return mHeaders;
+    }
+
     public void setFontSize(Context context){
         WebSettings settings = getSettings();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         int fontSize = Integer.parseInt(sharedPreferences.getString("pref_key_story_font_size", "14"));
+        //System.out.println(fontSize);
         settings.setDefaultFontSize(fontSize);
     }
 
@@ -101,7 +106,7 @@ public class WebReader extends WebView {
         Chapter chapter = mStory.getChapter(index+1);
         if(chapter != null) {
             updateHeaders(getContext());
-            String content = headers + "<body>" + chapter.getContent() + "</body>";
+            String content = mHeaders + "<body>" + chapter.getContent() + "</body>";
             this.loadDataWithBaseURL("file:///android_asset/", content, "text/html", "UTF-8", null);
             mStory.setLastPosition(0);
         }
@@ -111,7 +116,7 @@ public class WebReader extends WebView {
         Chapter chapter = mStory.getCurrentChapter();
         if(chapter != null) {
             updateHeaders(getContext());
-            String content = headers + "<body>" + chapter.getContent() + "</body>";
+            String content = mHeaders + "<body>" + chapter.getContent() + "</body>";
             this.loadDataWithBaseURL("file:///android_asset/", content, "text/html", "UTF-8", null);
         }
     }
@@ -120,7 +125,7 @@ public class WebReader extends WebView {
         Chapter chapter = mStory.getNextChapter();
         if(chapter != null) {
             updateHeaders(getContext());
-            String content = headers + "<body>" + chapter.getContent() + "</body>";
+            String content = mHeaders + "<body>" + chapter.getContent() + "</body>";
             this.loadDataWithBaseURL("file:///android_asset/",content, "text/html","UTF-8", null);
             mStory.setLastPosition(0);
         } else {
@@ -132,7 +137,7 @@ public class WebReader extends WebView {
         Chapter chapter = mStory.getPrevChapter();
         if(chapter!=null) {
             updateHeaders(getContext());
-            String content = headers + "<body>" + chapter.getContent() + "</body>";
+            String content = mHeaders + "<body>" + chapter.getContent() + "</body>";
             this.loadDataWithBaseURL("file:///android_asset/", content, "text/html","UTF-8", null);
             mStory.setLastPosition(0);
         } else {

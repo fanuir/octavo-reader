@@ -6,8 +6,10 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +24,7 @@ public class ReaderActivity extends AppCompatActivity {
 
     WebReader mWebReader;
     Handler uiHandler;
+    String mCurrHeaders;
 
     static public Intent newInstance(Context context) {
         return new Intent(context, ReaderActivity.class);
@@ -39,6 +42,8 @@ public class ReaderActivity extends AppCompatActivity {
             final JsonObject metadata = ArchiveStoryUtils.loadStoryMetadataFromFile(this, id);
 
             mWebReader = (WebReader) findViewById(R.id.web_reader);
+            mCurrHeaders = mWebReader.getHeaders();
+
             Toast.makeText(ReaderActivity.this, "Opening Story...", Toast.LENGTH_SHORT).show();
             uiHandler = new Handler();
             uiHandler.post(new Runnable() {
@@ -48,7 +53,18 @@ public class ReaderActivity extends AppCompatActivity {
                     setTitle(mWebReader.getStory().getTitle());
                 }
             });
-            mWebReader.addJavascriptInterface(new WebReaderInterface(ReaderActivity.this),"Android");
+            mWebReader.addJavascriptInterface(new WebReaderInterface(ReaderActivity.this), "Android");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ReaderActivity.this);
+            SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+                @Override
+                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                    System.out.println("Preferences changed.");
+                    mWebReader.updateHeaders(ReaderActivity.this);
+                    mWebReader.loadStoryState();
+                }
+            };
+            prefs.registerOnSharedPreferenceChangeListener(listener);
+
         }
     }
 
@@ -83,45 +99,45 @@ public class ReaderActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        switch (item.getItemId()) {
 
-        if (id == R.id.action_settings) {
-            Intent intent = SettingsActivity.newInstance(ReaderActivity.this);
-            startActivity(intent);
-            return true;
-        } else if(id == R.id.action_next_chap) {
-            uiHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mWebReader.loadNextChapter();
+            case R.id.action_settings:
+                Intent intent = SettingsActivity.newInstance(ReaderActivity.this);
+                startActivity(intent);
+                return true;
+            case R.id.action_next_chap:
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mWebReader.loadNextChapter();
+                    }
+                });
+                return true;
+            case R.id.action_prev_chap:
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mWebReader.loadPrevChapter();
+                    }
+                });
+                return true;
+            case R.id.action_bookmark:
+                float pos = mWebReader.calculateProgress();
+                //add bookmark here
+                System.out.println(String.format("Position: %f", pos));
+                return true;
+            case R.id.action_chapter_index:
+                System.out.println("Show table of contents");
+                if (mWebReader.getStory().getChapters().size() > 1) {
+                    ChapterIndexDialogFragment chapterIndexDialog = new ChapterIndexDialogFragment();
+                    chapterIndexDialog.show(getFragmentManager(), "chapterIndex");
+                } else {
+                    Toast.makeText(ReaderActivity.this, "Single chapter fic.", Toast.LENGTH_SHORT).show();
                 }
-            });
-            return true;
-        } else if(id == R.id.action_prev_chap) {
-            uiHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mWebReader.loadPrevChapter();
-                }
-            });
-            return true;
-        } else if(id == R.id.action_bookmark) {
-            float pos = mWebReader.calculateProgress();
-            //add bookmark here
-            System.out.println(String.format("Position: %f", pos));
-            return true;
-        } else if(id == R.id.action_chapter_index){
-            System.out.println("Show table of contents");
-            if(mWebReader.getStory().getChapters().size() > 1) {
-                ChapterIndexDialogFragment chapterIndexDialog = new ChapterIndexDialogFragment();
-                chapterIndexDialog.show(getFragmentManager(), "chapterIndex");
-            } else {
-                Toast.makeText(ReaderActivity.this, "Single chapter fic.", Toast.LENGTH_SHORT).show();
-            }
-            return true;
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -130,6 +146,20 @@ public class ReaderActivity extends AppCompatActivity {
         if(mWebReader != null){
             mWebReader.saveStoryState();
             System.out.println("Saved story progress.");
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(mWebReader != null){
+            mWebReader.setFontSize(ReaderActivity.this);
+            mWebReader.updateHeaders(ReaderActivity.this);
+            if(!mWebReader.getHeaders().equals(mCurrHeaders)){
+                System.out.println("Refresh.");
+                mWebReader.loadStoryState();
+                mCurrHeaders = mWebReader.getHeaders();
+            }
         }
     }
 
@@ -172,5 +202,7 @@ public class ReaderActivity extends AppCompatActivity {
         }
 
     }
+
+
 
 }

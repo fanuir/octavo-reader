@@ -56,7 +56,7 @@ public class StoryData {
 
     public String status;
 
-    public boolean isFollowing;
+    public boolean following;
 
     @SerializedName("last_updated")
     public String lastUpdated;
@@ -76,6 +76,8 @@ public class StoryData {
 
     @SerializedName("last_position")
     public int lastPosition;
+
+    public boolean read;
 
     public String summary;
 
@@ -228,6 +230,10 @@ public class StoryData {
     }
 
     public void setFollowing(boolean following) {
-        this.isFollowing = following;
+        this.following = following;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
     }
 }

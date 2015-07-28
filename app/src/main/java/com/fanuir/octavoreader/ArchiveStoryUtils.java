@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -18,7 +19,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by ivy on 7/16/15.
@@ -82,11 +86,14 @@ public class ArchiveStoryUtils {
         String published = fic.select(Constants.SEL_ARCHIVE_PUBLISHED).text();
 
         /* Last updated */
-        String updated;
+        String updated = null;
         try {
             updated = fic.select(Constants.SEL_ARCHIVE_LAST_UPDATED).text();
+            if(updated.equals("")){
+                updated = published;
+            }
         } catch (NullPointerException e){
-            updated = published;
+            e.printStackTrace();
         }
 
         /* Total Chapters */
@@ -160,6 +167,8 @@ public class ArchiveStoryUtils {
         metadata.setKudos(kudos);
         metadata.setLastUpdated(updated);
         metadata.setPublished(published);
+        metadata.setRead(false);
+        metadata.setBookmarks(new ArrayList<String>());
 
         return metadata;
 
@@ -297,40 +306,49 @@ public class ArchiveStoryUtils {
             e.printStackTrace();
         }
 
-        addStoryToArray(metadata, data);
+        boolean success = addStoryToArray(metadata, data);
 
-        String result = gson.toJson(metadata);
-        //System.out.println(result);
+        if(success) {
+            String result = gson.toJson(metadata);
+            //System.out.println(result);
 
-        try{
-            FileOutputStream fos = context.openFileOutput(Constants.STORY_METADATA_FILENAME, Context.MODE_PRIVATE);
-            ObjectOutputStream os = new ObjectOutputStream(fos);
-            os.writeObject(result);
-            System.out.println("Wrote metadata to file.");
-            os.close();
-            fos.close();
-        } catch (IOException e){
-            e.printStackTrace();
+            try {
+                FileOutputStream fos = context.openFileOutput(Constants.STORY_METADATA_FILENAME, Context.MODE_PRIVATE);
+                ObjectOutputStream os = new ObjectOutputStream(fos);
+                os.writeObject(result);
+                System.out.println("Wrote metadata to file.");
+                os.close();
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public static void addStoryToArray(JsonArray jsonArray, JsonObject jsonObject){
+    public static boolean addStoryToArray(JsonArray jsonArray, JsonObject jsonObject){
+        //String[] persistentKeys = {"last_position", "last_opened", "following", "current_chapter","bookmarks"};
         for(int i = 0; i < jsonArray.size(); i++) {
             JsonObject curr = jsonArray.get(i).getAsJsonObject();
-            if (curr.equals(jsonObject)) {
+            if (curr.get("title").getAsString().equals(jsonObject.get("title").getAsString())
+                    && (curr.get("last_updated").getAsString().equals(jsonObject.get("last_updated").getAsString())
+                    && curr.get("last_opened").getAsLong() == jsonObject.get("last_opened").getAsLong())) {
                 System.out.println("Story already in array.");
-                return;
-            }  else if(curr.get("title").getAsString().equals(jsonObject.get("title").getAsString())){
-                /* TODO: only replace story if something other than last_synced, last_opened different, etc
-                    Don't delete story progress
-                 */
-                jsonArray.set(i, jsonObject);
+                return false;
+            }  else if(curr.get("title").equals(jsonObject.get("title"))){
+                for(Map.Entry<String,JsonElement> entry : jsonObject.entrySet()){
+                    //if(!Arrays.asList(persistentKeys).contains(entry.getKey())) {
+                        System.out.println("Updating " + entry.getKey());
+                        curr.add(entry.getKey(), entry.getValue());
+                    //}
+                }
                 System.out.println("Story updated.");
-                return;
+                return true;
             }
         }
+        /* If story data isn't in array, add it */
         jsonArray.add(jsonObject);
         System.out.println("Story added.");
+        return true;
     }
 
 

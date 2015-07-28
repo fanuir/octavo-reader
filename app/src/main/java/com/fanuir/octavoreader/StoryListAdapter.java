@@ -1,12 +1,19 @@
 package com.fanuir.octavoreader;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.Html;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -83,6 +90,7 @@ public class StoryListAdapter extends BaseAdapter {
             infoView = (TextView) convertView.findViewById(R.id.layout_story_info);
 
             convertView.setTag(new ViewHolder(titleView, idView, authorView, summaryView, infoView));
+
         } else {
             ViewHolder viewHolder = (ViewHolder) convertView.getTag();
 
