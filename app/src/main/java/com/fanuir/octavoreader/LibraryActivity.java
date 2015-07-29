@@ -2,6 +2,11 @@ package com.fanuir.octavoreader;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.PaintDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
@@ -13,6 +18,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.google.gson.JsonObject;
@@ -135,6 +141,16 @@ public class LibraryActivity extends AppCompatActivity {
         }
     }
 
+    public void showDetails(int adapterIndex, int viewPos){
+        ViewSwitcher viewSwitcher = (ViewSwitcher) mList.getChildAt(viewPos).findViewById(R.id.story_item_view_switcher);
+        View mainView = mList.getChildAt(viewPos).findViewById(R.id.story_item_view_main);
+        if(viewSwitcher.getCurrentView() == mainView) {
+            JsonObject story = mStoryList.get(adapterIndex);
+            String title = story.get("title").getAsString();
+            Toast.makeText(LibraryActivity.this, "Details popup for " + title, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     class LibraryGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final String DEBUG_TAG = "Gestures";
 
@@ -146,6 +162,14 @@ public class LibraryActivity extends AppCompatActivity {
             int pos = adapterIndex - visibleIndex;
             onItemClick(adapterIndex, pos);
             return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e){
+            int adapterIndex = mList.pointToPosition((int)e.getX(), (int)e.getY());
+            int visibleIndex = mList.getFirstVisiblePosition();
+            int pos = adapterIndex - visibleIndex;
+            showDetails(adapterIndex, pos);
         }
 
         @Override

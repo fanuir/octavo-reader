@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
@@ -300,7 +301,7 @@ public class ArchiveStoryUtils {
         return null;
     }
 
-    public static void saveMetadataToFile(Context context, JsonObject data){
+    public static void saveMetadataToFile(Context context, JsonObject data, boolean download){
         JsonArray metadata;
         JsonParser jsonParser = new JsonParser();
         Gson gson = new Gson();
@@ -315,7 +316,7 @@ public class ArchiveStoryUtils {
             e.printStackTrace();
         }
 
-        boolean success = addStoryToArray(metadata, data);
+        boolean success = addStoryToArray(metadata, data, download);
 
         if(success) {
             String result = gson.toJson(metadata);
@@ -334,30 +335,45 @@ public class ArchiveStoryUtils {
         }
     }
 
-    public static boolean addStoryToArray(JsonArray jsonArray, JsonObject jsonObject){
-        //String[] persistentKeys = {"last_position", "last_opened", "following", "current_chapter","bookmarks"};
-        for(int i = 0; i < jsonArray.size(); i++) {
-            JsonObject curr = jsonArray.get(i).getAsJsonObject();
-            if (curr.get("title").getAsString().equals(jsonObject.get("title").getAsString())
-                    && (curr.get("last_updated").getAsString().equals(jsonObject.get("last_updated").getAsString())
-                    && curr.get("last_opened").getAsLong() == jsonObject.get("last_opened").getAsLong())) {
-                System.out.println("Story already in array.");
-                return false;
-            }  else if(curr.get("title").equals(jsonObject.get("title"))){
-                for(Map.Entry<String,JsonElement> entry : jsonObject.entrySet()){
-                    //if(!Arrays.asList(persistentKeys).contains(entry.getKey())) {
-                        System.out.println("Updating " + entry.getKey());
-                        curr.add(entry.getKey(), entry.getValue());
-                    //}
+    public static boolean addStoryToArray(JsonArray jsonArray, JsonObject jsonObject, boolean download){
+        String[] persistentKeys = {"last_position", "last_opened", "following", "current_chapter","bookmarks"};
+        if(download){
+            for(int i = 0; i < jsonArray.size(); i++){
+                JsonObject curr = jsonArray.get(i).getAsJsonObject();
+                if(curr.get("id").getAsString().equals(jsonObject.get("id").getAsString())){
+                    System.out.println("Story already in array.");
+                    return false;
                 }
-                System.out.println("Story updated.");
-                return true;
             }
+            jsonArray.add(jsonObject);
+            System.out.println("Added story to array.");
+            return true;
+        } else {
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JsonObject curr = jsonArray.get(i).getAsJsonObject();
+                if (curr.get("id").getAsString().equals(jsonObject.get("id").getAsString())){
+                    if( curr.get("last_position").getAsFloat() != jsonObject.get("last_position").getAsFloat()
+                            || curr.get("current_chapter").getAsInt() != jsonObject.get("current_chapter").getAsInt()
+                            || curr.get("last_opened").getAsLong() != jsonObject.get("last_opened").getAsLong()){
+
+                        jsonArray.set(i, jsonObject);
+                        System.out.println("Story position updated.");
+                        return true;
+                    } else if (!curr.get("last_updated").getAsString().equals(jsonObject.get("last_updated").getAsString())
+                            || curr.get("last_synced").getAsLong() != jsonObject.get("last_synced").getAsLong()) {
+                        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+                            if(!Arrays.asList(persistentKeys).contains(entry.getKey())) {
+                                System.out.println("Updating " + entry.getKey());
+                                curr.add(entry.getKey(), entry.getValue());
+                            }
+                        }
+                    System.out.println("Story data updated.");
+                    return true;
+                    }
+                }
+            }
+            return false;
         }
-        /* If story data isn't in array, add it */
-        jsonArray.add(jsonObject);
-        System.out.println("Story added.");
-        return true;
     }
 
 

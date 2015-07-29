@@ -153,7 +153,7 @@ public class WebReader extends WebView {
         float position = calculateProgress();
         mStory.setLastPosition(position);
         System.out.println("Last position %: " + mStory.getLastPosition());
-        ArchiveStoryUtils.saveMetadataToFile(getContext(), mStory.getMetadata());
+        ArchiveStoryUtils.saveMetadataToFile(getContext(), mStory.getMetadata(), false);
     }
 
     public void loadStoryState(){

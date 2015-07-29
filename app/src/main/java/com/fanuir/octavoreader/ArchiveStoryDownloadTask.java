@@ -56,7 +56,7 @@ public class ArchiveStoryDownloadTask extends AsyncTask<String, Integer, Integer
         //Write story to file here
         if(mStory != null) {
             ArchiveStoryUtils.saveChaptersToFile(mContext, mStory.getChapters(), mStory.getId());
-            ArchiveStoryUtils.saveMetadataToFile(mContext, mStory.getMetadata());
+            ArchiveStoryUtils.saveMetadataToFile(mContext, mStory.getMetadata(), true);
         }
         return id;
     }
