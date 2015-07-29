@@ -200,7 +200,7 @@ public class LibraryActivity extends AppCompatActivity {
 
         @Override
         public boolean onDown(MotionEvent e){
-            return true;
+            return false;
         }
     }
 
