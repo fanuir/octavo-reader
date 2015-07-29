@@ -1,85 +1,106 @@
 package com.fanuir.octavoreader;
 
-import android.app.ProgressDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 /**
  * Created by ivy on 7/10/15.
  */
-public class ArchiveStoryDownloadTask extends AsyncTask<String, Integer, Void>{
+public class ArchiveStoryDownloadTask extends AsyncTask<String, Integer, Integer>{
 
     private Context mContext;
     private Story mStory;
-    private ProgressDialog progressDialog;
-    private ProgressDialog progressDialogInit;
+    private NotificationCompat.Builder mBuilder;
+    private NotificationManager mNotificationManager;
+    private int mMax;
+    private int mId;
 
     public ArchiveStoryDownloadTask(Context context){
         super();
         mContext = context;
+        mId = 1;
     }
 
     @Override
     protected void onPreExecute(){
-        progressDialogInit = ProgressDialog.show(mContext, "Downloading...", "Please wait.");
-        progressDialog = new ProgressDialog(mContext);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setIndeterminate(false);
-        progressDialog.setProgress(0);
-        progressDialog.setCancelable(false);
-        progressDialog.setTitle("Downloading...");
-        progressDialog.setMessage("Please wait.");
+        mBuilder = new NotificationCompat.Builder(mContext)
+                .setSmallIcon(R.drawable.ic_file_download_white_24dp)
+                .setContentTitle("Downloading...")
+                .setContentText("Please wait.");
+        Intent resultIntent = LibraryActivity.newInstance(mContext);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
+        stackBuilder.addParentStack(LibraryActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent pendingIntent =
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(pendingIntent);
+
+        mMax = 0;
+        mId++;
+
+        mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(1, mBuilder.build());
     }
 
     @Override
-    protected Void doInBackground(String... params) {
+    protected Integer doInBackground(String... params) {
         String storyId = params[0];
+        int id = Integer.parseInt(storyId);
         mStory = ArchiveStoryUtils.downloadStory(this, storyId);
         //Write story to file here
         if(mStory != null) {
             ArchiveStoryUtils.saveChaptersToFile(mContext, mStory.getChapters(), mStory.getId());
             ArchiveStoryUtils.saveMetadataToFile(mContext, mStory.getMetadata());
         }
-        return null;
+        return id;
     }
 
     @Override
-    protected void onPostExecute(Void param){
-        if(progressDialog.isShowing()){
-            progressDialog.dismiss();
-        }
-        if(progressDialogInit.isShowing()){
-            progressDialogInit.dismiss();
-        }
+    protected void onPostExecute(Integer param){
+        mBuilder.setContentText("Download complete.")
+                .setProgress(0, 0,false);
+        mNotificationManager.notify(param, mBuilder.build());
         if(mStory != null) {
             Toast.makeText(mContext, mStory.toString(), Toast.LENGTH_LONG).show();
-            //Intent i = ReaderActivity.newInstance(mContext);
-            //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //i.putExtra("filename", mStory.());
-            //mContext.startActivity(i);
         } else {
             Toast.makeText(mContext, "Failed. Please check your network connection.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void setMax(int max){
-        progressDialog.setMax(max);
+    public NotificationManager getNotificationManager(){
+        return mNotificationManager;
     }
 
-    public void doProgress(int value){
+    public NotificationCompat.Builder getBuilder(){
+        return mBuilder;
+    }
+
+    public void setMax(int max){
+        mMax = max;
+    }
+
+    public void doProgress(Integer... value){
         publishProgress(value);
     }
 
     @Override
     protected void onProgressUpdate(Integer... progress){
-        progressDialog.setProgress(progress[0]);
-        if (progressDialog.getMax() == 0){
-            progressDialogInit.dismiss();
-            progressDialog.show();
-            progressDialog.setMessage("Downloading story...");
+        if (mMax == 0) {
+            mBuilder.setProgress(0, 0, true);
+            mBuilder.setContentText("Downloading story...");
+            mNotificationManager.cancel(1);
+            mNotificationManager.notify(progress[1], mBuilder.build());
         } else {
-            progressDialog.setMessage("Downloading chapter " + progress[0].toString() + " of " + progressDialog.getMax());
+
+            mBuilder.setProgress(mMax, progress[0], false);
+            mBuilder.setContentText("Downloading chapter " + progress[0].toString() + " of " + mMax);
+            mNotificationManager.notify(progress[1], mBuilder.build());
         }
     }
 }

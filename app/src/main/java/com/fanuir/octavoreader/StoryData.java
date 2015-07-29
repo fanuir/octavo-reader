@@ -17,6 +17,8 @@ public class StoryData {
 
     public String rating;
 
+    public String url;
+
     public void setRating(String rating) {
         this.rating = rating;
     }
@@ -235,5 +237,9 @@ public class StoryData {
 
     public void setRead(boolean read) {
         this.read = read;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

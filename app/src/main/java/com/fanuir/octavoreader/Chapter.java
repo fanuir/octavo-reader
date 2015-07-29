@@ -8,43 +8,37 @@ import java.io.Serializable;
 public class Chapter implements Serializable {
 
     private String mTitle;
-    private String mNotes;
     private String mContent;
+    private String mUrl;
 
-    public Chapter() {
-        this.mTitle = "Chapter 1";
-        this.mNotes = "A new chapter.";
-        this.mContent = "<p>It was a wondrous day.</p>";
-    }
-
-    public Chapter(String mTitle, String mNotes, String mContent) {
+    public Chapter(String mTitle, String mContent, String mUrl) {
         this.mTitle = mTitle;
-        this.mNotes = mNotes;
         this.mContent = mContent;
+        this.mUrl = mUrl;
     }
 
     public String getTitle() {
         return mTitle;
     }
 
-    public String getNotes() {
-        return mNotes;
-    }
-
     public String getContent() {
         return mContent;
+    }
+
+    public String getUrl(){
+        return mUrl;
     }
 
     public void setTitle(String mTitle) {
         this.mTitle = mTitle;
     }
 
-    public void setNotes(String mNotes) {
-        this.mNotes = mNotes;
-    }
-
     public void setContent(String mContent) {
         this.mContent = mContent;
+    }
+
+    public void setUrl(String mUrl){
+        this.mUrl = mUrl;
     }
 
     public String toString(){

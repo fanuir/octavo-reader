@@ -45,10 +45,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 EditText idField = (EditText) findViewById(R.id.story_id_field);
                 String storyId = idField.getText().toString();
+                ArchiveStoryDownloadTask sf = new ArchiveStoryDownloadTask(v.getContext());
                 if(!storyId.equals("")) {
                     try {
-                        ArchiveStoryDownloadTask sf = new ArchiveStoryDownloadTask(v.getContext());
                         sf.execute(storyId);
+                        idField.setText("");
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
                         Toast.makeText(v.getContext(), "Input must be numeric.", Toast.LENGTH_SHORT).show();
