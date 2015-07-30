@@ -7,10 +7,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -18,7 +21,6 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ReaderActivity extends AppCompatActivity {
 
@@ -184,21 +186,32 @@ public class ReaderActivity extends AppCompatActivity {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final WebReader reader = (WebReader) getActivity().findViewById(R.id.web_reader);
+            final int curr = reader.getStory().getCurrentChapterNum() - 1;
+
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             ArrayList<Chapter> chapters = reader.getStory().getChapters();
-            String[] chapterTitles = new String[chapters.size()];
+            CharSequence[] chapterTitles = new CharSequence[chapters.size()];
             for(int i = 0; i < chapters.size(); i++){
-                chapterTitles[i] = chapters.get(i).getTitle();
+                String title = chapters.get(i).getTitle();
+                if(i == curr){
+                    SpannableString bold = new SpannableString(title);
+                    bold.setSpan(new StyleSpan(Typeface.BOLD), 0, title.length(), 0);
+                    chapterTitles[i] = bold;
+                } else {
+                    chapterTitles[i] = title;
+                }
             }
             builder.setTitle("Chapter Index")
-                    .setItems(chapterTitles, new DialogInterface.OnClickListener() {
+                    .setSingleChoiceItems(chapterTitles, curr, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            reader.loadChapter(which);
+                            if(which != curr) {
+                                reader.loadChapter(which);
+                                dialog.dismiss();
+                            }
                         }
                     });
             return builder.create();
-
         }
 
     }
