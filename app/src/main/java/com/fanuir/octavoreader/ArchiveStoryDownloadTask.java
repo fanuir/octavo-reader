@@ -70,6 +70,7 @@ public class ArchiveStoryDownloadTask extends AsyncTask<String, Integer, Integer
             Toast.makeText(mContext, mStory.toString(), Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(mContext, "Failed. Please check your network connection.", Toast.LENGTH_SHORT).show();
+            mNotificationManager.cancelAll();
         }
     }
 

@@ -44,9 +44,11 @@ public class WebReader extends WebView {
 
     public String getFontHtml(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String font = sharedPreferences.getString("pref_key_story_font", "Sans Serif");
+        String font = sharedPreferences.getString("pref_key_story_font", "Original");
         String result;
-        if(font.equals("Sans Serif")){
+        if(font.equals("Original")){
+            result = "";
+        } else if(font.equals("Sans Serif")){
             result = "body { font-family: sans-serif; }";
         } else if(font.equals("Serif")){
             result = "body { font-family: serif; }";

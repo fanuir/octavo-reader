@@ -8,6 +8,7 @@
     </string-array>
     
     <string-array name="pref_story_fonts_entries">
+        <item>Original</item>
         <item>Serif</item>
         <item>Lora</item>
         <item>Droid Serif</item>
@@ -17,6 +18,7 @@
     </string-array>
 
     <string-array name="pref_story_fonts_entry_values">
+        <item>Original</item>
         <item>Serif</item>
         <item>Lora-Regular.ttf</item>
         <item>DroidSerif.ttf</item>

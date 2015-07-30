@@ -1,6 +1,7 @@
 package com.fanuir.octavoreader;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -38,7 +39,7 @@ public class ArchiveStoryUtils {
             return parseStory(fic, id, task);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.d("ArchiveStoryUtils", e.getMessage());
         }
         return null;
     }
@@ -53,7 +54,7 @@ public class ArchiveStoryUtils {
             return parseStoryMetadata(fic, id);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.d("ArchiveStoryUtils", e.getMessage());
         }
         return null;
     }
@@ -214,7 +215,7 @@ public class ArchiveStoryUtils {
                     nextUrl = String.format("http://archiveofourown.org%s?view_adult=true", nextChap.select(Constants.SEL_ARCHIVE_NEXT_CHAPTER_LINK).attr("href"));
                     System.out.println(nextUrl);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.d("ArchiveStoryUtils", e.getMessage());
                 }
             }
         }
@@ -235,7 +236,7 @@ public class ArchiveStoryUtils {
             System.out.println(endnotes);
         } catch (Exception e){
             System.out.println("No notes.");
-            e.printStackTrace();
+            Log.d("ArchiveStoryUtils", e.getMessage());
         }
 
         // Replace "Chapter Text" with the chapter title and notes
@@ -289,7 +290,7 @@ public class ArchiveStoryUtils {
 
         } catch (Exception e){
             metadata = new JsonArray();
-            e.printStackTrace();
+            Log.d("ArchiveStoryUtils", e.getMessage());
         }
 
         for(int i = 0; i < metadata.size(); i++){
@@ -313,7 +314,7 @@ public class ArchiveStoryUtils {
 
         } catch (Exception e){
             metadata = new JsonArray();
-            e.printStackTrace();
+            Log.d("ArchiveStoryUtils", e.getMessage());
         }
 
         boolean success = addStoryToArray(metadata, data, download);
@@ -330,7 +331,7 @@ public class ArchiveStoryUtils {
                 os.close();
                 fos.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.d("ArchiveStoryUtils", e.getMessage());
             }
         }
     }

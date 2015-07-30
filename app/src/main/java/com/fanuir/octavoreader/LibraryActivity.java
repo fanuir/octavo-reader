@@ -9,6 +9,7 @@ import android.graphics.drawable.PaintDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -192,7 +193,7 @@ public class LibraryActivity extends AppCompatActivity {
                     onSwipeRight(pos);
                 }
             } catch (Exception e){
-                e.printStackTrace();
+                Log.d(DEBUG_TAG, e.getMessage());
             }
 
             return false;
@@ -203,5 +204,7 @@ public class LibraryActivity extends AppCompatActivity {
             return false;
         }
     }
+
+
 
 }
