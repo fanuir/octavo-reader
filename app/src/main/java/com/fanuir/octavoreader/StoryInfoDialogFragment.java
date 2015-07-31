@@ -77,7 +77,7 @@ public class StoryInfoDialogFragment extends DialogFragment {
 
         TextView detailsView = (TextView) dialog.findViewById(R.id.dialog_story_info);
         String details = "";
-        String[] tags = {"authors", "fandoms", "categories", "relationships", "characters", "tags"};
+        String[] tags = {"authors", "fandoms",  "warnings", "categories", "relationships", "characters", "tags"};
         String[] properties = {"summary"};
         String[] stats = {"avail_chapters", "word_count", "kudos", "hits", "bookmarks"};
 
@@ -107,16 +107,7 @@ public class StoryInfoDialogFragment extends DialogFragment {
     public String safeAddJsonString(JsonObject story, String property) {
         String item = story.get(property).getAsString();
         if (!item.equals("")) {
-            String desc;
-            if(property.equals("avail_chapters")){
-                desc = "Chapters";
-                String total = (story.get("total_chapters").getAsInt() == -1) ? "?" : story.get("total_chapters").getAsString();
-                item = String.format("%s/%s", item, total);
-            } else if(property.equals("word_count")) {
-                desc = "Word Count";
-            } else {
-                desc = property.substring(0, 1).toUpperCase() + property.substring(1);
-            }
+            String desc = property.substring(0, 1).toUpperCase() + property.substring(1);
             return String.format("<p><b>%s: </b>%s</p>", desc, item);
         } else {
             return "";
@@ -132,7 +123,7 @@ public class StoryInfoDialogFragment extends DialogFragment {
                 String total = (story.get("total_chapters").getAsInt() == -1) ? "?" : story.get("total_chapters").getAsString();
                 item = String.format("%s/%s", item, total);
             } else if(property.equals("word_count")) {
-                desc = "Word Count";
+                desc = "Words";
             } else {
                 desc = property.substring(0, 1).toUpperCase() + property.substring(1);
             }
