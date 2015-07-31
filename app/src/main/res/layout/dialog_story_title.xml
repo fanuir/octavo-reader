@@ -7,6 +7,7 @@
     android:layout_height="wrap_content">
 
     <TextView
+        android:id="@+id/dialog_story_title"
         android:textAppearance="?android:textAppearanceLarge"
         android:minHeight="?android:listPreferredItemHeight"
         android:gravity="center_vertical"

@@ -19,21 +19,9 @@ public class StoryData {
 
     public String url;
 
-    public void setRating(String rating) {
-        this.rating = rating;
-    }
+    public ArrayList<String> warnings;
 
-    public void setRelationships(ArrayList<String> relationships) {
-        this.relationships = relationships;
-    }
-
-    public void setCharacters(ArrayList<String> characters) {
-        this.characters = characters;
-    }
-
-    public void setTags(ArrayList<String> tags) {
-        this.tags = tags;
-    }
+    public ArrayList<String> categories;
 
     public ArrayList<String> relationships;
 
@@ -45,7 +33,8 @@ public class StoryData {
 
     public ArrayList<String> fandoms;
 
-    public ArrayList<String> bookmarks;
+    @SerializedName("user_bookmarks")
+    public ArrayList<String> userBookmarks;
 
     @SerializedName("avail_chapters")
     public int availChapters;
@@ -70,6 +59,10 @@ public class StoryData {
 
     public int kudos;
 
+    public int bookmarks;
+
+    public int hits;
+
     @SerializedName("last_opened")
     public long lastOpened;
 
@@ -91,16 +84,8 @@ public class StoryData {
         this.id = id;
     }
 
-    public String getSource() {
-        return source;
-    }
-
     public void setSource(String source) {
         this.source = source;
-    }
-
-    public String getFilename(){
-        return String.format("%s-%s", getSource(), getId());
     }
 
     public String getTitle() {
@@ -111,16 +96,8 @@ public class StoryData {
         this.title = title;
     }
 
-    public ArrayList<String> getAuthors() {
-        return authors;
-    }
-
     public void setAuthors(ArrayList<String> authors) {
         this.authors = authors;
-    }
-
-    public ArrayList<String> getFandoms() {
-        return fandoms;
     }
 
     public void setFandoms(ArrayList<String> fandoms) {
@@ -135,100 +112,48 @@ public class StoryData {
         this.availChapters = availChapters;
     }
 
-    public int getTotalChapters() {
-        return totalChapters;
-    }
-
     public void setTotalChapters(int totalChapters) {
         this.totalChapters = totalChapters;
-    }
-
-    public String getStatus() {
-        return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
     }
 
-    public String getLastUpdated() {
-        return lastUpdated;
-    }
-
     public void setLastUpdated(String lastUpdated) {
         this.lastUpdated = lastUpdated;
-    }
-
-    public String getPublished() {
-        return published;
     }
 
     public void setPublished(String published) {
         this.published = published;
     }
 
-    public int getWordCount() {
-        return wordCount;
-    }
-
     public void setWordCount(int wordCount) {
         this.wordCount = wordCount;
-    }
-
-    public int getKudos() {
-        return kudos;
     }
 
     public void setKudos(int kudos) {
         this.kudos = kudos;
     }
 
-    public int getCurrentChapter() {
-        return currentChapter;
-    }
-
     public void setCurrentChapter(int currentChapter) {
         this.currentChapter = currentChapter;
-    }
-
-    public long getLastOpened() {
-        return lastOpened;
     }
 
     public void setLastOpened(long lastOpened) {
         this.lastOpened = lastOpened;
     }
 
-    public String getSummary() {
-        return summary;
-    }
-
     public void setSummary(String summary) {
         this.summary = summary;
     }
 
-    public ArrayList<String> getBookmarks() {
-        return bookmarks;
-    }
-
-    public void setBookmarks(ArrayList<String> bookmarks) {
-        this.bookmarks = bookmarks;
-    }
-
-    public long getLastSynced() {
-        return lastSynced;
+    public void setUserBookmarks(ArrayList<String> userBookmarks) {
+        this.userBookmarks = userBookmarks;
     }
 
     public void setLastSynced(long lastSynced) {
         this.lastSynced = lastSynced;
-    }
-
-    public int getLastPosition() {
-        return lastPosition;
-    }
-
-    public void setLastPosition(int lastPosition) {
-        this.lastPosition = lastPosition;
     }
 
     public void setFollowing(boolean following) {
@@ -241,5 +166,37 @@ public class StoryData {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
+    public void setRelationships(ArrayList<String> relationships) {
+        this.relationships = relationships;
+    }
+
+    public void setCharacters(ArrayList<String> characters) {
+        this.characters = characters;
+    }
+
+    public void setTags(ArrayList<String> tags) {
+        this.tags = tags;
+    }
+
+    public void setWarnings(ArrayList<String> warnings) {
+        this.warnings = warnings;
+    }
+
+    public void setCategories(ArrayList<String> categories) {
+        this.categories = categories;
+    }
+
+    public void setBookmarks(int bookmarks) {
+        this.bookmarks = bookmarks;
+    }
+
+    public void setHits(int hits) {
+        this.hits = hits;
     }
 }

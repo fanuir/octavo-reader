@@ -82,6 +82,12 @@ public class ArchiveStoryUtils {
         /* Kudos */
         int kudos = Integer.parseInt(fic.select(Constants.SEL_ARCHIVE_KUDOS).text());
 
+        /* Bookmarks */
+        int bookmarks = Integer.parseInt(fic.select(Constants.SEL_ARCHIVE_BOOKMARKS).text());
+
+        /* Hits */
+        int hits = Integer.parseInt(fic.select(Constants.SEL_ARCHIVE_HITS).text());
+
         /* Published */
         String published = fic.select(Constants.SEL_ARCHIVE_PUBLISHED).text();
 
@@ -131,6 +137,13 @@ public class ArchiveStoryUtils {
             chars.add(character.text());
         }
 
+        /* Categories */
+        ArrayList<String> cats = new ArrayList<String>();
+        Elements categories = fic.select(Constants.SEL_ARCHIVE_CATEGORIES);
+        for(Element category : categories){
+            cats.add(category.text());
+        }
+
         /* Relationships */
         ArrayList<String> ships = new ArrayList<String>();
         Elements relationships = fic.select(Constants.SEL_ARCHIVE_RELATIONSHIPS);
@@ -142,6 +155,13 @@ public class ArchiveStoryUtils {
         Elements tags = fic.select(Constants.SEL_ARCHIVE_TAGS);
         for(Element tag : tags){
             ts.add(tag.text());
+        }
+
+        /* Warnings */
+        ArrayList<String> ws = new ArrayList<String>();
+        Elements warnings = fic.select(Constants.SEL_ARCHIVE_WARNINGS);
+        for(Element warning : warnings){
+            ws.add(warning.text());
         }
 
         StoryData metadata = new StoryData();
@@ -169,7 +189,11 @@ public class ArchiveStoryUtils {
         metadata.setLastUpdated(updated);
         metadata.setPublished(published);
         metadata.setRead(false);
-        metadata.setBookmarks(new ArrayList<String>());
+        metadata.setUserBookmarks(new ArrayList<String>());
+        metadata.setBookmarks(bookmarks);
+        metadata.setCategories(cats);
+        metadata.setHits(hits);
+        metadata.setWarnings(ws);
 
         return metadata;
 
@@ -337,7 +361,7 @@ public class ArchiveStoryUtils {
     }
 
     public static boolean addStoryToArray(JsonArray jsonArray, JsonObject jsonObject, boolean download){
-        String[] persistentKeys = {"last_position", "last_opened", "following", "current_chapter","bookmarks"};
+        String[] persistentKeys = {"last_position", "last_opened", "following", "current_chapter","user_bookmarks"};
         if(download){
             for(int i = 0; i < jsonArray.size(); i++){
                 JsonObject curr = jsonArray.get(i).getAsJsonObject();

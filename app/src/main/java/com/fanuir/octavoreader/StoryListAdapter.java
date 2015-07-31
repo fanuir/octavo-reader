@@ -98,7 +98,7 @@ public class StoryListAdapter extends BaseAdapter {
         String authors = LibraryUtils.printJsonArray(story.get("authors").getAsJsonArray());
         String fandoms = LibraryUtils.printJsonArray(story.get("fandoms").getAsJsonArray());
         String totalChapters = (story.get("total_chapters").getAsInt() == -1) ? "?" : story.get("total_chapters").toString();
-        String authorLine = String.format("%s - <i>%s</i>", authors, fandoms);
+        String authorLine = String.format("%s · <i>%s</i>", authors, fandoms);
         String infoLine = String.format("<b>Chapters:</b> %d/%s <b>Words:</b> %s",
                 story.get("avail_chapters").getAsInt(), totalChapters,
                 NumberFormat.getIntegerInstance().format(story.get("word_count").getAsInt()));

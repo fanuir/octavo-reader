@@ -46,6 +46,7 @@ public class ArchiveStoryDownloadTask extends AsyncTask<String, Integer, Integer
 
         mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(1, mBuilder.build());
+        Toast.makeText(mContext, "Starting download.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
