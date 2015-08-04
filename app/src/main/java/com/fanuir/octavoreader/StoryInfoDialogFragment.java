@@ -3,12 +3,19 @@ package com.fanuir.octavoreader;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.JsonObject;
@@ -22,8 +29,6 @@ import java.text.NumberFormat;
  * Created by ivy on 7/29/15.
  */
 public class StoryInfoDialogFragment extends DialogFragment {
-
-    JsonObject mStory;
 
     static StoryInfoDialogFragment newInstance(String story){
         StoryInfoDialogFragment fragment = new StoryInfoDialogFragment();
@@ -41,7 +46,7 @@ public class StoryInfoDialogFragment extends DialogFragment {
         JsonParser jsonParser = new JsonParser();
         final JsonObject story = (JsonObject) jsonParser.parse(getArguments().getString("story"));
 
-        builder.setTitle(story.get("title").getAsString())
+        builder//.setTitle(story.get("title").getAsString())
                 .setView(inflater.inflate(R.layout.dialog_story_info, null))
                 .setPositiveButton(R.string.dialog_story_read, new DialogInterface.OnClickListener() {
                     @Override
@@ -71,9 +76,27 @@ public class StoryInfoDialogFragment extends DialogFragment {
     public void onStart(){
         super.onStart();
         JsonParser jsonParser = new JsonParser();
-        JsonObject story = (JsonObject) jsonParser.parse(getArguments().getString("story"));
+        final JsonObject story = (JsonObject) jsonParser.parse(getArguments().getString("story"));
 
         Dialog dialog = getDialog();
+        TextView titleView = (TextView) dialog.findViewById(R.id.dialog_story_title);
+        titleView.setText(story.get("title").getAsString());
+
+        final ImageView favButton = (ImageView) dialog.findViewById(R.id.favorites_button);
+        favButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("Clicked heart.");
+                if(favButton.getDrawable().getConstantState().equals(ContextCompat.getDrawable(getActivity(),
+                        R.drawable.ic_favorite_border_black_24dp).getConstantState())) {
+                    story.addProperty("favorite", true);
+                    favButton.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_favorite_black_24dp));
+                } else {
+                    story.addProperty("favorite", false);
+                    favButton.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.ic_favorite_border_black_24dp));
+                }
+            }
+        });
 
         TextView detailsView = (TextView) dialog.findViewById(R.id.dialog_story_info);
         String details = "";

@@ -105,6 +105,12 @@ public class LibraryActivity extends AppCompatActivity {
         reloadAllData();
     }
 
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        System.gc();
+    }
+
     public void onSwipeLeft(int position){
         //Toast.makeText(LibraryActivity.this, "Swiped left.", Toast.LENGTH_SHORT).show();
         View mainView = mList.getChildAt(position).findViewById(R.id.story_item_view_main);

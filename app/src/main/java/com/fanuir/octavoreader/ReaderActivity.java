@@ -1,5 +1,6 @@
 package com.fanuir.octavoreader;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -16,7 +17,11 @@ import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.gson.JsonObject;
 
@@ -24,6 +29,7 @@ import java.util.ArrayList;
 
 public class ReaderActivity extends AppCompatActivity {
 
+    LinearLayout mReaderLayout;
     WebReader mWebReader;
     Handler uiHandler;
     String mCurrHeaders;
@@ -43,7 +49,11 @@ public class ReaderActivity extends AppCompatActivity {
             id = extras.getString("id");
             final JsonObject metadata = ArchiveStoryUtils.loadStoryMetadataFromFile(this, id);
 
-            mWebReader = (WebReader) findViewById(R.id.web_reader);
+            mReaderLayout = (LinearLayout) findViewById(R.id.reader_layout);
+            mWebReader = new WebReader(ReaderActivity.this);
+            mWebReader.setId(R.id.reader_view);
+            mWebReader.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            mReaderLayout.addView(mWebReader);
             mCurrHeaders = mWebReader.getHeaders();
 
             Toast.makeText(ReaderActivity.this, "Opening Story...", Toast.LENGTH_SHORT).show();
@@ -149,6 +159,7 @@ public class ReaderActivity extends AppCompatActivity {
             mWebReader.saveStoryState();
             System.out.println("Saved story progress.");
         }
+        System.gc();
     }
 
     @Override
@@ -163,6 +174,26 @@ public class ReaderActivity extends AppCompatActivity {
                 mCurrHeaders = mWebReader.getHeaders();
             }
         }
+    }
+
+    private void releaseWebView() {
+        mReaderLayout.removeAllViews();
+        if(mWebReader != null){
+            mWebReader.setTag(null);
+            mWebReader.clearHistory();
+            mWebReader.removeAllViews();
+            mWebReader.loadUrl("about:blank");
+            mWebReader.destroy();
+            mWebReader = null;
+        }
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        System.out.println("Reader onDestroy called.");
+        releaseWebView();
+        System.gc();
     }
 
     @Override
@@ -185,7 +216,7 @@ public class ReaderActivity extends AppCompatActivity {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final WebReader reader = (WebReader) getActivity().findViewById(R.id.web_reader);
+            final WebReader reader = (WebReader) getActivity().findViewById(R.id.reader_view);
             final int curr = reader.getStory().getCurrentChapterNum() - 1;
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

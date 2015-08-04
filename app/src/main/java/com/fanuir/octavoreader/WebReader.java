@@ -24,8 +24,8 @@ public class WebReader extends WebView {
     private Story mStory;
     private String mHeaders;
 
-    public WebReader(Context context, AttributeSet attrs){
-        super(context, attrs);
+    public WebReader(Context context){
+        super(context);
         updateHeaders(context);
         setHorizontalScrollBarEnabled(false);
         setFontSize(context);

@@ -70,7 +70,7 @@ public class StoryListAdapter extends BaseAdapter {
         TextView summaryView;
         TextView infoView;
 
-        if (convertView == null){
+        if (convertView == null || convertView.getTag() == null){
             convertView = LayoutInflater.from(mContext)
                     .inflate(R.layout.story_layout, parent, false);
 
